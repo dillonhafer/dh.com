@@ -1,0 +1,349 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>DillonHafer.com</title>
+    <meta name="author" content="Dillon Hafer">
+    <link href="/stylesheets/public.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/foundation.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/app.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/ie.css?1360078666" media="screen" rel="stylesheet" type="text/css" />	
+		 <script src="/javascripts/jquery-1.4.2.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery.validate.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery-ui-1.8.custom.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery.form.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/swfobject.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/audio-player-uncompressed.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/rails.jquery.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/foundation.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/app.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/modernizr.foundation.js?1360078666" type="text/javascript"></script>
+   <style>
+     #ajax_working {
+       display: none;
+       background-image: url('/images/ajax-loader-2.gif');
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       width: 16px;
+       height: 16px;
+       margin-left: -8px;
+       margin-top: -8px;
+       z-index: 999;
+     }
+     #flash_notice {
+      position: fixed;   
+      top: 0;
+      left: 0;   
+      background: green;
+      float: left;
+      color: white !important;
+      padding: 11px;
+      text-align: center;
+      font-size: 16pt;
+      text-shadow: 0 -1px 1px #666;
+      font-weight: bold;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px #AAA;
+      z-index: 99999;
+     }
+     .status {border: 1px solid #AAA;padding: 1px 8px; border-radius: 12px;}
+     .false {background: rgb(239,197,202); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%, rgba(210,75,90,1) 50%, rgba(186,39,55,1) 51%, rgba(241,142,153,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(239,197,202,1)), color-stop(50%,rgba(210,75,90,1)), color-stop(51%,rgba(186,39,55,1)), color-stop(100%,rgba(241,142,153,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efc5ca', endColorstr='#f18e99',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+     .true {background: rgb(240,249,255); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%, rgba(203,235,255,1) 47%, rgba(161,219,255,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(240,249,255,1)), color-stop(47%,rgba(203,235,255,1)), color-stop(100%,rgba(161,219,255,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+     .field_with_errors input { border: 1px dotted red !important;}
+     .field_with_errors label {
+        color: red;
+     }
+     h1, h2, h3, h4, h5, .quicksand {
+       font-weight: normal; 
+       font-family: 'Quicksand', sans-serif !important;
+     }
+     a#homeLink { -webkit-transition: color .25s ease-in-out; }
+     a {
+      -webkit-transition: background-color .25s ease-in-out;
+     }
+     img#masthead:hover {opacity: .75;}
+     img#masthead {
+       -webkit-transition: opacity .15s linear;
+     }
+     fieldset {border: 1px solid #CCC; border-radius: 6px; background: white; padding: 12px;}
+     
+.sname {
+  list-style-type:none;
+}
+
+.linkers a {
+  color: black;
+}
+
+
+
+
+
+  #water {
+    position: absolute;
+    width: 50px;
+    height: 64px;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    top: 50%;
+    left: 0;
+    -webkit-transform: scaleY(0.9); 
+  }
+  #water2 {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    top: 50%;
+    left: 0;
+    background-image: -webkit-gradient(linear, 60% 100%, 60% 0%, from(rgba(150,150,150,0.6)), to(rgba(50,50,50,0.9)));
+  }
+  #reflection {
+    position: relative;
+    margin: 0 auto;
+    width: 50px;  /* picture width */
+    height: 64px; /* picture height */
+    overflow: hidden;
+    /* reflection made by matrix transform  */
+    /* matrix(a, c, b, d, tx, ty) where tx and ty stand for the */
+    /* translation values                    */
+    /* see: https://developer.mozilla.org/en/css/-moz-transform */
+    -webkit-transform: matrix(1, 0, 0, -1, 0, 0);
+  }
+  .w {
+    position: absolute;
+    /* image source:                                        */
+    /* http://www.math.binghamton.edu/alex/Winter_Tree.html */
+    /* -----------------------------------------------------*/
+    background: url(/images/rails.png);
+    background-repeat: no-repeat;
+    opacity: 1;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    -webkit-animation: translateandscale 1s linear;
+    -webkit-animation-iteration-count: infinite;
+  }
+
+  @-webkit-keyframes scale {
+    0% {-webkit-transform: scale(1);}
+    50% {-webkit-transform: scale(1.1);}
+    100% {-webkit-transform: scale(1);}
+  }
+  @-webkit-keyframes translate {
+    0% {-webkit-transform: translate(0px, 0px);}
+    50% {-webkit-transform: translate(5px, -5px);}
+    100% {-webkit-transform: translate(0px, 0px);}
+  }
+  @-webkit-keyframes translateandscale {
+    0% {-webkit-transform: translate(0px, 0px) scale(1) ;}
+    50% {-webkit-transform: translate(2px, -2px) scale(1.1);}
+    100% {-webkit-transform: translate(0px, 0px) scale(1);}
+  }
+
+
+   </style>
+
+
+   <script>
+     $(document).ready(function(){
+       $.ajaxSetup({
+         beforeSend: function() {
+            $("#ajax_working").show()
+         },
+         complete: function(){
+            $("#ajax_working").hide()
+         }
+       });
+
+       $("input:visible:enabled:first").focus();
+      
+       $("input.date").datepicker();
+
+       $("#flash_notice").fadeTo(1000).delay(800).fadeOut('fast');
+       $('body').height($(window).height());
+
+       $(window).resize( function() {
+         $('body').height($(window).height());
+       });
+
+       
+     });
+   </script>
+    <script src="/javascripts/jquery.tablesorter.min.js?1360078666" type="text/javascript"></script>
+  <script>
+      $("table.example").tablesorter();
+  </script>
+
+  <script src="http://www.causes.com/moment_of_silence.js">
+  showText: true;  
+  text: 'Find out how you can stay involved'; 
+  url: 'http://causes.com/momentforsandyhook'; 
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37363195-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body style="background-size: 100% 100%; min-height: 600px;">
+
+  <div id="midground"></div>
+  <div id="foreground"></div>
+
+<div class='row'>
+  <div class='twelve columns' style='padding: 0'>
+    <a href="/" title="Home"><img alt="dillon@web" id="masthead" src="/images/dh.png?1360078666" /></a><h2 class='right hide-on-phones' style="margin: 12px 12px; margin-top: 36px;"><a href="/" id="homeLink" title="Home">dillonhafer.com</a></h2>
+  </div>
+</div>
+
+<div class='row hide-on-phones'>
+  <div class='twelve columns quicksand' id="topNav">
+  <a href="/">Home</a>
+  <a href="/books">Reading List</a>
+  <a href="/aboutme">About</a>  
+  <a href="/contact">Contact</a>  
+  <a href="http://blog.dillonhafer.com" target="_blank">Blog</a>  
+  </div>
+</div>
+
+<div id="ajax_working"></div>
+
+<br class='hide-on-phones' />
+
+<div id="main_content" class='row'>
+  
+  <div class='twelve columns'>
+    
+
+
+<div style='padding: 12px;'>
+<h4>SSH Tunneling</h4>
+<hr />
+
+  <div class="section">
+         <style>
+pre {
+ font-family: monospace;
+ padding: 8px;
+background-color: #333;
+color: #FFF;
+}
+</style>
+<h4>Context</h4>
+You work in an environment of multiple servers/computers. Only one main web/database server is open to a public facing IP address, while the rest are behind internal firewalls. Of course SSH is ONLY allowed using key-pairs.  
+<br /><br />
+
+<h4>Problem</h4>
+You are away from work either on vacation, or just at home for the night, and you need to access information on one of the internal servers. Because the private server does not have a public IP address you cannot directly access it remotely.
+<br /><br />
+
+<h4>Solution</h4>
+Set up an SSH tunnel to create a bridge from <strong>your</strong> computer to the <strong>private</strong> server through the <strong>public</strong> server.
+<br /><br />
+
+<h4>Action</h4>
+Set up port tunnel:
+<ul>
+<li><pre>ssh -L 2222:privateIPaddress:22 publicIPaddress</pre></li>
+</ul>
+Open new terminal <br /><br />
+Connect to tunnel:
+<ul>
+<li><pre>ssh -P 2222 localhost</pre></li>
+</ul>
+  </div>
+</div>
+
+<script type="text/javascript">
+//
+// create a batch of overlapping divs with css style class=reflection and 
+// webkitAnimationDelay = random
+// 
+var N =10; // create N x N divs
+var pic_w = 257;  // picture width
+var pic_h = 283;  // picture height
+var reflection = document.getElementById("reflection");
+
+function square(x, y){
+  sqdiv = document.createElement('div');
+  sqdiv.className = "w";
+  sqdiv.style.webkitAnimationDelay = (5*Math.random())+"s";
+  sqdiv.style.top = y+'px';
+  sqdiv.style.left = x+'px';
+  sqdiv.style.width = pic_w/N + 10 + "px"; // 10 pixel overlapping area in x direction
+  sqdiv.style.height = pic_h/N + 10 +"px"; // 10 pixel overlapping area in x direction
+  sqdiv.style.backgroundPosition = -1*x+"px " +(-1*y)+"px";
+  reflection.appendChild(sqdiv);
+}
+function makesquares(){
+  for(var y=0; y<N; y++){
+    for(var x=0; x<N; x++){ 
+      square( x*pic_w/N ,  y*pic_h/N ); 
+    }
+  }
+}
+
+makesquares();
+
+</script>
+  </div>
+  
+  
+</div>
+
+<div class='row hide-on-phones'><hr /></div>
+
+<div id="footer" class='row hide-on-phones quicksand'>
+  <div class='twelve columns'>
+    copyright
+    2013
+    &copy;
+    DillonHafer.com
+        
+  </div>
+</div>
+
+<div class='row show-on-phones quicksand'>
+  <div class='twelve columns white button large quicksand'>
+    copyright
+    2013
+    &copy;
+    DillonHafer.com
+        
+  </div>
+</div>
+<br class='show-on-desktops' />
+</body>
+</html>

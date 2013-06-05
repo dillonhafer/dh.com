@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>DillonHafer.com</title>
+    <meta name="author" content="Dillon Hafer">
+    <link href="/stylesheets/public.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/foundation.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/app.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/ie.css?1360078666" media="screen" rel="stylesheet" type="text/css" />	
+		 <script src="/javascripts/jquery-1.4.2.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery.validate.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery-ui-1.8.custom.min.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/jquery.form.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/swfobject.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/audio-player-uncompressed.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/rails.jquery.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/foundation.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/app.js?1360078666" type="text/javascript"></script>
+<script src="/javascripts/modernizr.foundation.js?1360078666" type="text/javascript"></script>
+   <style>
+     #ajax_working {
+       display: none;
+       background-image: url('/images/ajax-loader-2.gif');
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       width: 16px;
+       height: 16px;
+       margin-left: -8px;
+       margin-top: -8px;
+       z-index: 999;
+     }
+     #flash_notice {
+      position: fixed;   
+      top: 0;
+      left: 0;   
+      background: green;
+      float: left;
+      color: white !important;
+      padding: 11px;
+      text-align: center;
+      font-size: 16pt;
+      text-shadow: 0 -1px 1px #666;
+      font-weight: bold;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px #AAA;
+      z-index: 99999;
+     }
+     .status {border: 1px solid #AAA;padding: 1px 8px; border-radius: 12px;}
+     .false {background: rgb(239,197,202); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%, rgba(210,75,90,1) 50%, rgba(186,39,55,1) 51%, rgba(241,142,153,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(239,197,202,1)), color-stop(50%,rgba(210,75,90,1)), color-stop(51%,rgba(186,39,55,1)), color-stop(100%,rgba(241,142,153,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efc5ca', endColorstr='#f18e99',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+     .true {background: rgb(240,249,255); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%, rgba(203,235,255,1) 47%, rgba(161,219,255,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(240,249,255,1)), color-stop(47%,rgba(203,235,255,1)), color-stop(100%,rgba(161,219,255,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+     .field_with_errors input { border: 1px dotted red !important;}
+     .field_with_errors label {
+        color: red;
+     }
+     h1, h2, h3, h4, h5, .quicksand {
+       font-weight: normal; 
+       font-family: 'Quicksand', sans-serif !important;
+     }
+     a#homeLink { -webkit-transition: color .25s ease-in-out; }
+     a {
+      -webkit-transition: background-color .25s ease-in-out;
+     }
+     img#masthead:hover {opacity: .75;}
+     img#masthead {
+       -webkit-transition: opacity .15s linear;
+     }
+     fieldset {border: 1px solid #CCC; border-radius: 6px; background: white; padding: 12px;}
+     a.newButton:hover { color: #333; }
+a.newButton {
+  padding: 12px;
+  border: 1px solid #69F;
+  margin-bottom: 44px;
+  text-decoration: none;
+  color: white;
+  text-shadow: 0 -1px 1px #CCC;
+  font-weight: bold;
+  border-radius: 4px;
+  background: rgb(183,222,237); /* Old browsers */
+  background: -moz-linear-gradient(top, rgba(183,222,237,1) 0%, rgba(113,206,239,1) 50%, rgba(33,180,226,1) 51%, rgba(183,222,237,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,222,237,1)), color-stop(50%,rgba(113,206,239,1)), color-stop(51%,rgba(33,180,226,1)), color-stop(100%,rgba(183,222,237,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(183,222,237,1) 0%,rgba(113,206,239,1) 50%,rgba(33,180,226,1) 51%,rgba(183,222,237,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(183,222,237,1) 0%,rgba(113,206,239,1) 50%,rgba(33,180,226,1) 51%,rgba(183,222,237,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, rgba(183,222,237,1) 0%,rgba(113,206,239,1) 50%,rgba(33,180,226,1) 51%,rgba(183,222,237,1) 100%); /* IE10+ */
+  background: linear-gradient(top, rgba(183,222,237,1) 0%,rgba(113,206,239,1) 50%,rgba(33,180,226,1) 51%,rgba(183,222,237,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b7deed', endColorstr='#b7deed',GradientType=0 ); /* IE6-9 */
+}
+
+a.editButton {
+  font-size: 12px;
+  float: right; 
+  margin-left: 6px; 
+} 
+
+.bookDiv {
+  padding: 12px;
+  margin: 4px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #CCC;
+}
+
+.bookAuthor { 
+  font-style:italic;
+  font-size: 12px;
+  color: #888;
+  font-weight: bold;
+  left: 173px; 
+  margin-top: 24px;
+}
+
+.bookTitle { color: #AAA; margin-top: -2px; border-bottom: 1px solid #CCC} 
+.dateRead {
+  float: right;
+  font-size: 12px;
+  color: #888;
+  font-style:italic;  
+} 
+
+.bookDescription {
+  margin-top: 28px;
+  text-indent: 12px;
+  line-height: 18px;
+}
+
+.amazonLink {
+  margin-right: 6px;
+}
+
+img.bookImage { 
+  height: 100px;
+  width: 100px;
+  margin-right: 12px;
+  float: left;
+  margin-right:
+  box-shadow: 0 1px 5px #777;    
+  -moz-box-shadow: 0 1px 5px #777;    
+  -webkit-box-shadow: 0 1px 5px #777;        
+  -o-box-shadow: 0 1px 5px #777;       
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;    
+}
+h4 {color: #333;}
+
+
+   </style>
+
+
+   <script>
+     $(document).ready(function(){
+       $.ajaxSetup({
+         beforeSend: function() {
+            $("#ajax_working").show()
+         },
+         complete: function(){
+            $("#ajax_working").hide()
+         }
+       });
+
+       $("input:visible:enabled:first").focus();
+      
+       $("input.date").datepicker();
+
+       $("#flash_notice").fadeTo(1000).delay(800).fadeOut('fast');
+       $('body').height($(window).height());
+
+       $(window).resize( function() {
+         $('body').height($(window).height());
+       });
+
+       
+     });
+   </script>
+  
+  <script src="http://www.causes.com/moment_of_silence.js">
+  showText: true;  
+  text: 'Find out how you can stay involved'; 
+  url: 'http://causes.com/momentforsandyhook'; 
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37363195-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body style="background-size: 100% 100%; min-height: 600px;">
+
+  <div id="midground"></div>
+  <div id="foreground"></div>
+
+<div class='row'>
+  <div class='twelve columns' style='padding: 0'>
+    <a href="/" title="Home"><img alt="dillon@web" id="masthead" src="/images/dh.png?1360078666" /></a><h2 class='right hide-on-phones' style="margin: 12px 12px; margin-top: 36px;"><a href="/" id="homeLink" title="Home">dillonhafer.com</a></h2>
+  </div>
+</div>
+
+<div class='row hide-on-phones'>
+  <div class='twelve columns quicksand' id="topNav">
+  <a href="/">Home</a>
+  <a href="/books">Reading List</a>
+  <a href="/aboutme">About</a>  
+  <a href="/contact">Contact</a>  
+  <a href="http://blog.dillonhafer.com" target="_blank">Blog</a>  
+  </div>
+</div>
+
+<div id="ajax_working"></div>
+
+<br class='hide-on-phones' />
+
+<div id="main_content" class='row'>
+  
+  <div class='twelve columns'>
+    
+<h4 class='show-on-desktops'>The Reading List</h4>
+<h4 class='show-on-phones black button nice'>The Reading List</h4>
+<hr />
+<div class='row'>
+  <div class='twelve columns'>
+    <img alt="Books" src="/images/books.png?1360078666" />
+  </div>
+</div>
+<hr />
+  <div class="bookDiv">
+    <h4 class="bookTitle">Practical Object-Oriented Design In Ruby <span class="bookAuthor">by Sandi Metz</span>
+    <span class="dateRead">Read on: 11/25/2012</span>
+    </h4> 
+    <p class="bookDescription"><img alt="Oop" class="bookImage round" src="/images/books/oop.png?1360078666" title="Practical Object-Oriented Design In Ruby" />Sandi Metz has distilled a lifetime of conversations and presentations about object-oriented design into a set of Ruby-focused practices for crafting manageable, extensible, and pleasing code. She shows you how to build new applications that can survive success and repair existing applications that have become impossible to change. Each technique is illustrated with extended examples, all downloadable from the companion Web site, <a href="http://poodr.info" target="_blank">poodr.info</a></p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0321721330/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0321721330&linkCode=as2&tag=dillonhaferco-20" class="black button nice radius tiny">Buy On Amazon</a>
+<a href="http://www.amazon.com/gp/product/B0096BYG7C/ref=as_li_qf_sp_asin_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B0096BYG7C&linkCode=as2&tag=dillonhaferco-20" class="blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">Death by Meeting <span class="bookAuthor">by Patrick Lencioni</span>
+    <span class="dateRead">Read on: 09/04/2012</span>
+    </h4> 
+    <p class="bookDescription"><img alt="Dbm" class="bookImage round" src="/images/books/dbm.png?1360078666" title="Death by Meeting" />In his latest page-turning work of business fiction, best-selling author Patrick Lencioni provides readers with another powerful and thought-provoking book, this one centered around a cure for the most painful yet underestimated problem of modern business: bad meetings.  And what he suggests is both simple and revolutionary.
+<br /><br />
+Casey McDaniel, the founder and CEO of Yip Software, is in the midst of a problem he created, but one he doesn’t know how to solve.  And he doesn’t know where or who to turn to for advice.  His staff can’t help him; they’re as dumbfounded as he is by their tortuous meetings.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0787968056/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0787968056" class="black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0787968056" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B000PY4II6/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B000PY4II6" class="blue button nice radius tiny">Kindle Edition</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=B000PY4II6" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+</p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">When People Are Big and God is Small <span class="bookAuthor">by Edward T. Welch</span>
+    <span class="dateRead">Read on: 05/12/2012</span>
+    </h4> 
+    <p class="bookDescription"><img alt="Pab" class="bookImage round" src="/images/books/pab.png?1360078666" title="When People Are Big and God is Small" />The problem is clear: People are too big in our lives and God is too small. The answer is straightforward: We must learn to know that our God is more loving and more powerful than we ever imagined. Yet this task is not easy. Even if we worked at the most spectacular of national parks, or the bush in our backyard started burning without being consumed, or Jesus appeared and wrestled a few rounds with us, we would not be guaranteed a persistent reverence of God. Too often our mountain-top experiences are quickly overtaken by the clamor of the world, and God once again is diminished in our minds. The goal is to establish a daily tradition of growing in the knowledge of God.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0875526004/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0875526004" class="black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0875526004" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B0073M6FFC/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B0073M6FFC" class="blue button nice radius tiny">Kindle Edition</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=B0073M6FFC" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+</p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">The Wizard <span class="bookAuthor">by H. Rider Haggard</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="The_wizard" class="bookImage round" src="/images/books/the_wizard.png?1360078666" title="The Wizard" />This anthology is a thorough introduction to classic literature for those who have not yet experienced these literary masterworks. For those who have known and loved these works in the past, this is an invitation to reunite with old friends in a fresh new format. From Shakespeare s finesse to Oscar Wilde s wit, this unique collection brings together works as diverse and influential as The Pilgrim s Progress and Othello. As an anthology that invites readers to immerse themselves in the masterpieces of the literary giants, it is must-have addition to any library.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/1466220198/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1466220198" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=1466220198" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+<a href="http://www.amazon.com/gp/product/B000JQU8Z2/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B000JQU8Z2" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">All of Grace <span class="bookAuthor">by Charles H. Spurgeon</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="All_of_grace" class="bookImage round" src="/images/books/all_of_grace.png?1360078666" title="All of Grace" />All of Grace is one of several works of Charles Haddon (C.H.) Spurgeon (June 19, 1834 - January 31, 1892) who was a British Particular Baptist preacher and who remains highly influential among Christians of different denominations, among whom he is still known as the "Prince of Preachers". This despite the fact that he was a strong figure in the Reformed Baptist tradition, defending the Church in agreement with the 1689 London Baptist Confession of Faith understanding, against liberalism and pragmatic theological tendencies even in his day. In his lifetime, Spurgeon preached to around 10,000,000 people, often up to 10 times each week at different places. His sermons have been translated into many languages. Spurgeon was the pastor of the congregation of the New Park Street Chapel (later the Metropolitan Tabernacle) in London for 38 years. Spurgeon was a prolific author of many types of works including sermons, an autobiography, a commentary, books on prayer, a devotional, a magazine, poetry, hymnist, and more. Many sermons were transcribed as he spoke and were translated into many languages during his lifetime.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/1611043883/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=1611043883" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=1611043883" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B004DCB3O8/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B004DCB3O8" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">The Screwtape Letters <span class="bookAuthor">by C. S. Lewis</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="Screwtape" class="bookImage round" src="/images/books/screwtape.png?1360078666" title="The Screwtape Letters" />The Screwtape Letters is a satirical Christian apologetics novel written in epistolary style by C. S. Lewis, first published in book form in February 1942. The story takes the form of a series of letters from a senior demon, Screwtape, to his nephew, a junior "tempter" named Wormwood, so as to advise him on methods of securing the damnation of a British man, known only as "the Patient".</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0060652896/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0060652896" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0060652896" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">Paradise Lost <span class="bookAuthor">by John Milton</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="Paradise_lost" class="bookImage round" src="/images/books/paradise_lost.png?1360078666" title="Paradise Lost" />Paradise Lost, an epic poem in blank verse, written by the 17th-century poet John Milton as he became blind at the end of his life, is a retelling of the Biblical story of the Fall of Man. While based on the Christian tale, the poem incorporates many topics, and spends most of its verses detailing the journey of Satan and his war on the angels. The depiction of Adam and Eve draws an elaborate panorama of their trials. This classic of Western literature is wide-reaching and enormously influential, and should not be absent from the modern reader's bookshelf.
+
+</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/019280619X/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=019280619X" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=019280619X" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B004UJSYO6/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B004UJSYO6" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">Quo vadis <span class="bookAuthor">by Henryk Sienkiewicz</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="Quo_vadis" class="bookImage round" src="/images/books/quo_vadis.png?1360078666" title="Quo vadis" />The Latin phrase, Quo Vadis? means "Whither goest thou?" It is a phrase of great meaning to Christians. The author of Quo Vadis, Henryk Sienkiewicz, was awarded the Nobel Prize for literature in 1905, and the enduring popularity of Quo Vadis contributed greatly to the award. 
+<br /><br />
+Set in Rome in the time of Nero, Quo Vadis tells the story of Roman tribune Marcus, who falls in love with a beautiful Christian girl, Ligia. Sienkiewicz studied Roman history extensively before writing the book, and it features real historical figures, including St. Peter, Petronius, and the Emperor Nero. 
+<br /><br />
+Quo Vadis tells a powerful tale of love and redemption in a time of ultimate danger -- for Christians and Romans alike.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/146624528X/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=146624528X" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=146624528X" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B000JQU8V6/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B000JQU8V6" class="amazonLink blue  button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">Ender&#x27;s Game <span class="bookAuthor">by Orsen Scott Card</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="Enders_game" class="bookImage round" src="/images/books/enders_game.png?1360078666" title="Ender&#x27;s Game" />In order to develop a secure defense against a hostile alien race's next attack, government agencies breed child geniuses and train them as soldiers. A brilliant young boy, Andrew "Ender" Wiggin lives with his kind but distant parents, his sadistic brother Peter, and the person he loves more than anyone else, his sister Valentine. Peter and Valentine were candidates for the soldier-training program but didn't make the cut--young Ender is the Wiggin drafted to the orbiting Battle School for rigorous military training.
+<br /><br />
+Ender's skills make him a leader in school and respected in the Battle Room, where children play at mock battles in zero gravity. Yet growing up in an artificial community of young soldiers, Ender suffers greatly from isolation, rivalry from his peers, pressure from the adult teachers, and an unsettling fear of the alien invaders. His psychological battles include loneliness, fear that he is becoming like the cruel brother he remembers, and fanning the flames of devotion to his beloved sister. 
+<br /><br />
+Is Ender the general Earth needs? But Ender is not the only result of the genetic experiments. The war with the Buggers has been raging for a hundred years, and the quest for the perfect general has been underway for almost as long. Ender's two older siblings are every bit as unusual as he is, but in very different ways. Between the three of them lie the abilities to remake a world. If the world survives, that is.
+<br /><br />
+Winner of the Hugo and Nebula Awards.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0812550706/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0812550706" class="amazonLink black  button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0812550706" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B003G4W49C/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B003G4W49C" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">The Pragmatic Programmer <span class="bookAuthor">by David Thomas</span>
+    
+    </h4> 
+    <p class="bookDescription"><img alt="P_programmer" class="bookImage round" src="/images/books/p_programmer.png?1360078666" title="The Pragmatic Programmer" />What others in the trenches say about The Pragmatic Programmer...
+<br /><br />
+"The cool thing about this book is that it's great for keeping the programming process fresh. The book helps you to continue to grow and clearly comes from people who have been there." --Kent Beck, author of Extreme Programming Explained: Embrace Change 
+<br /><br />
+"I found this book to be a great mix of solid advice and wonderful analogies!" --Martin Fowler, author of Refactoring and UML Distilled 
+<br /><br />
+"I would buy a copy, read it twice, then tell all my colleagues to run out and grab a copy. This is a book I would never loan because I would worry about it being lost." --Kevin Ruland, Management Science, MSG-Logistics 
+<br /><br />
+"The wisdom and practical experience of the authors is obvious. The topics presented are relevant and useful...By far its greatest strength for me has been the outstanding analogies--tracer bullets, broken windows, and the fabulous helicopter-based explanation of the need for orthogonality, especially in a crisis situation. I have little doubt that this book will eventually become an excellent source of useful information for journeymen programmers and expert mentors alike."--John Lakos, author of Large-Scale C++ Software Design 
+<br /><br />
+"This is the sort of book I will buy a dozen copies of when it comes out so I can give it to my clients. " --Eric Vought, Software Engineer 
+</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/020161622X/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=020161622X" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=020161622X" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B000SEGEKI/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B000SEGEKI" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">CODE <span class="bookAuthor">by Charles Petzoid</span>
+    <span class="dateRead">Read on: 12/30/2011</span>
+    </h4> 
+    <p class="bookDescription"><img alt="Code" class="bookImage round" src="/images/books/code.png?1360078666" title="CODE" />What do flashlights, the British invasion, black cats, and seesaws have to do with computers? In CODE, they show us the ingenious ways we manipulate language and invent new means of communicating with each other. And through CODE, we see how this ingenuity and our very human compulsion to communicate have driven the technological innovations of the past two centuries.
+<br /><br />
+Using everyday objects and familiar language systems such as Braille and Morse code, author Charles Petzold weaves an illuminating narrative for anyone who’s ever wondered about the secret inner life of computers and other smart machines.
+<br /><br />
+It’s a cleverly illustrated and eminently comprehensible story—and along the way, you’ll discover you’ve gained a real context for understanding today’s world of PCs, digital media, and the Internet. No matter what your level of technical savvy, CODE will charm you—and perhaps even awaken the technophile within.</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0735611319/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0735611319" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0735611319" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+  </div>
+  <div class="bookDiv">
+    <h4 class="bookTitle">Apprenticeship Patterns <span class="bookAuthor">by Dave Hoover &amp; Adewale Oshineye</span>
+    <span class="dateRead">Read on: 11/11/2011</span>
+    </h4> 
+    <p class="bookDescription"><img alt="A_patterns" class="bookImage round" src="/images/books/a_patterns.png?1360078666" title="Apprenticeship Patterns" />Are you doing all you can to further your career as a software developer? With today's rapidly changing and ever-expanding technologies, being successful requires more than technical expertise. To grow professionally, you also need soft skills and effective learning techniques. Honing those skills is what this book is all about. Authors Dave Hoover and Adewale Oshineye have cataloged dozens of behavior patterns to help you perfect essential aspects of your craft.
+<br />
+Compiled from years of research, many interviews, and feedback from O'Reilly's online forum, these patterns address difficult situations that programmers, administrators, and DBAs face every day. And it's not just about financial success. Apprenticeship Patterns also approaches software development as a means to personal fulfillment. Discover how this book can help you make the best of both your life and your career.
+<br />
+Solutions to some common obstacles that this book explores in-depth include:
+<ul>
+<li>Burned out at work? "Nurture Your Passion" by finding a pet project to rediscover the joy of problem solving.</li>
+<li>Feeling overwhelmed by new information? Re-explore familiar territory by building something you've built before, then use "Retreat into Competence" to move forward again.</li>
+<li>Stuck in your learning? Seek a team of experienced and talented developers with whom you can "Be the Worst" for a while.
+</li>
+</ul>
+
+"Brilliant stuff! Reading this book was like being in a time machine that pulled me back to those key learning moments in my career as a professional software developer and, instead of having to learn best practices the hard way, I had a guru sitting on my shoulder guiding me every step towards master craftsmanship. I'll certainly be recommending this book to clients. I wish I had this book 14 years ago!" -Russ Miles, CEO, OpenCredo</p>
+    <br style="clear: both;" />
+    <p class="aLink"><a href="http://www.amazon.com/gp/product/0596518382/ref=as_li_tf_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0596518382" class="amazonLink black button nice radius tiny">Buy On Amazon</a><img src="http://www.assoc-amazon.com/e/ir?t=dillonhaferco-20&l=as2&o=1&a=0596518382" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+<a href="http://www.amazon.com/gp/product/B002RMSZ7E/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&tag=dillonhaferco-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=B002RMSZ7E" class="amazonLink blue button nice radius tiny">Kindle Edition</a></p>
+  </div>
+
+  </div>
+  
+  
+</div>
+
+<div class='row hide-on-phones'><hr /></div>
+
+<div id="footer" class='row hide-on-phones quicksand'>
+  <div class='twelve columns'>
+    copyright
+    2013
+    &copy;
+    DillonHafer.com
+        
+  </div>
+</div>
+
+<div class='row show-on-phones quicksand'>
+  <div class='twelve columns white button large quicksand'>
+    copyright
+    2013
+    &copy;
+    DillonHafer.com
+        
+  </div>
+</div>
+<br class='show-on-desktops' />
+</body>
+</html>

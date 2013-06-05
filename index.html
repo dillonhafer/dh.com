@@ -1,0 +1,203 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>DillonHafer.com</title>
+    <meta name="author" content="Dillon Hafer">
+    <link href="/stylesheets/public.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/foundation.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/app.css?1360078666" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/ie.css?1360078666" media="screen" rel="stylesheet" type="text/css" />	
+		<script src="/javascripts/jquery-1.4.2.min.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/jquery.validate.min.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/jquery-ui-1.8.custom.min.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/jquery.form.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/swfobject.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/audio-player-uncompressed.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/rails.jquery.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/foundation.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/app.js?1360078666" type="text/javascript"></script>
+    <script src="/javascripts/modernizr.foundation.js?1360078666" type="text/javascript"></script>
+   <style>
+     #ajax_working {
+       display: none;
+       background-image: url('/images/ajax-loader-2.gif');
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       width: 16px;
+       height: 16px;
+       margin-left: -8px;
+       margin-top: -8px;
+       z-index: 999;
+     }
+     #flash_notice {
+      position: fixed;   
+      top: 0;
+      left: 0;   
+      background: green;
+      float: left;
+      color: white !important;
+      padding: 11px;
+      text-align: center;
+      font-size: 16pt;
+      text-shadow: 0 -1px 1px #666;
+      font-weight: bold;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px #AAA;
+      z-index: 99999;
+     }
+     .status {border: 1px solid #AAA;padding: 1px 8px; border-radius: 12px;}
+     .false {background: rgb(239,197,202); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%, rgba(210,75,90,1) 50%, rgba(186,39,55,1) 51%, rgba(241,142,153,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(239,197,202,1)), color-stop(50%,rgba(210,75,90,1)), color-stop(51%,rgba(186,39,55,1)), color-stop(100%,rgba(241,142,153,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(239,197,202,1) 0%,rgba(210,75,90,1) 50%,rgba(186,39,55,1) 51%,rgba(241,142,153,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efc5ca', endColorstr='#f18e99',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+     .true {background: rgb(240,249,255); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%, rgba(203,235,255,1) 47%, rgba(161,219,255,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(240,249,255,1)), color-stop(47%,rgba(203,235,255,1)), color-stop(100%,rgba(161,219,255,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+     .field_with_errors input { border: 1px dotted red !important;}
+     .field_with_errors label {
+        color: red;
+     }
+     h1, h2, h3, h4, h5, .quicksand {
+       font-weight: normal; 
+       font-family: 'Quicksand', sans-serif !important;
+     }
+     a#homeLink { -webkit-transition: color .25s ease-in-out; }
+     a {
+      -webkit-transition: background-color .25s ease-in-out;
+     }
+     img#masthead:hover {opacity: .75;}
+     img#masthead {
+       -webkit-transition: opacity .15s linear;
+     }
+     fieldset {border: 1px solid #CCC; border-radius: 6px; background: white; padding: 12px;}
+     p {text-align: center;}
+
+
+     //body {
+     // background: #333;
+     // color: lightgreen;
+     //}
+     //a {color: white;}
+     //a:visited {color: white;}
+   </style>
+
+   <script>
+     $(document).ready(function(){
+       $.ajaxSetup({
+         beforeSend: function() {
+            $("#ajax_working").show()
+         },
+         complete: function(){
+            $("#ajax_working").hide()
+         }
+       });
+
+       $("input:visible:enabled:first").focus();
+      
+       $("input.date").datepicker();
+
+       $("#flash_notice").fadeTo(1000).delay(800).fadeOut('fast');
+       $('body').height($(window).height());
+
+       $(window).resize( function() {
+         $('body').height($(window).height());
+       });
+
+       
+     });
+   </script>
+</head>
+<body style="background-size: 100% 100%; min-height: 600px;">
+
+  <div id="midground"></div>
+  <div id="foreground"></div>
+
+<div class='row'>
+  <div class='twelve columns' style='padding: 0'>
+    <a href="/" title="Home"><img alt="dillon@web" id="masthead" src="/images/dh.png?1360078666" /></a><h2 class='right hide-on-phones' style="margin: 12px 12px; margin-top: 36px;"><a href="/" id="homeLink" title="Home">dillonhafer.com</a></h2>
+  </div>
+</div>
+
+<div class='row hide-on-phones'>
+  <div class='twelve columns quicksand' id="topNav">
+  <a href="/">Home</a>
+  <a href="/books">Reading List</a>
+  <a href="/about">About</a>  
+  <a href="/contact">Contact</a>  
+  <a href="http://blog.dillonhafer.com" target="_blank">Blog</a>  
+  </div>
+</div>
+
+<div id="ajax_working"></div>
+
+<br class='hide-on-phones' />
+
+<div id="main_content" class='row'>
+  
+  <div class='twelve columns'>     
+
+<div class='row'>
+  <div class="four columns">
+    <ul class="indexColumn">
+      <li class='show-on-phones black button nice large'>Home</li>
+      <li><a href="/books" class="blue">Reading List</a></li>
+      <li><a href="/about" class="blue">About me</a></li>
+      <li><a href="/contact" class="blue">Contact me</a></li>
+      <li><a href="http://blog.dillonhafer.com" class="blue" target="_blank">Blog</a></li>
+    </ul>    
+  </div>
+
+  <div class="four columns ">
+    <ul class="indexColumn ">
+      <li class='show-on-phones black button nice large '>World</li>      
+      <li><a href="/prop-open" class="blue">Pandora&#x27;s Box</a></li>
+      <li><a href="/windows-sucks" class="blue">Windows Programs</a></li>
+    </ul>    
+  </div>
+
+  <div class="four columns">
+    <ul class="indexColumn">
+      <li class='show-on-phones black button nice large'>Work</li>      
+      <li><a href="/thin" class="blue">Thin as Daemon</a></li>
+      <li><a href="/ping" class="blue">Pinging with timestamps</a></li>
+      <li><a href="/ssh" class="blue">SSH Tunneling</a></li>
+      <li><a href="/osx-icons" class="blue">OSX Icons</a></li>
+    </ul>    
+  </div>
+</div>
+  </div>
+  
+  
+</div>
+
+<div class='row hide-on-phones'><hr /></div>
+
+<div id="footer" class='row hide-on-phones quicksand'>
+  <div class='twelve columns'>
+    copyright
+    2013
+    &copy;
+    DillonHafer.com
+        
+  </div>
+</div>
+
+<br class='show-on-desktops' />
+</body>
+</html>
