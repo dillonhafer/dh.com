@@ -31,8 +31,10 @@ function execute(command) {
   var options = params.slice(1, params.length);
   var result = window[cmd];
 
-  if (result === undefined) {
-   result = '<p class="text">-bash: '+cmd+': command not found</p>'
+  if (command == '') {
+    result = "";
+  } else if (result === undefined) {
+    result = '<p class="text">-bash: '+cmd+': command not found</p>'
   } else {
     result = result();
   }      
@@ -70,6 +72,33 @@ function exit() {
   window.close();
 }
 
+
+function GetUptimeStats(){
+  var dateFuture = new Date(2013,4,30,11,16,59);
+  var dateNow = new Date();
+  var amount = dateFuture.getTime() - dateNow.getTime();                
+
+  var days=0; var hours=0;var mins=0;var secs=0;var out="";
+
+  amount = Math.floor(amount/1000);//kill the "milliseconds" so just secs
+
+  days=Math.floor(amount/86400);//days
+  amount=amount%86400;
+
+  hours=Math.floor(amount/3600);//hours
+  amount=amount%3600;
+
+  mins=Math.floor(amount/60);//minutes
+  amount=amount%60;
+
+  secs=Math.floor(amount);//seconds
+
+  if(days != 0){out += Math.abs(days) +" day"+((days!=1)?"s":"")+", ";}
+  if(days != 0 || hours != 0){out += Math.abs(hours) +" hour"+((hours!=1)?"s":"")+", ";}
+  if(days != 0 || hours != 0 || mins != 0){out += Math.abs(mins) +" min"+((mins!=1)?"s":"")+", ";}  
+  return out;
+}
+
 function ls() {
   return "<p class='text'>"+
         "<a href='/books' class='blue-text'>Reading List</a><br />"+
@@ -86,6 +115,20 @@ function fooBar() {
   return "<p class='text'>foo was called</p>";
 }
 
+function w() {
+  var login_data = localStorage['first-visit'].split(' ');
+  var user_month = login_data[0];
+  var user_day = login_data[1];
+  var user_year = new Date().getFullYear().toString().slice(2,4);  
+  var login_time = user_day+user_month+user_year;
+
+  var uptime_line = uptime();
+  var line = "<br />USER    TTY          FROM     LOGIN@     IDLE    WHAT";
+  var info = "<br />dhafer  s000         -       28Mar13     19days  /home/dhafer/.rvm/gems/ruby-1.9.3-p385";
+     info += "<br />user    console      -       "+login_time+"     1:49    /usr/bin/bash";
+  return uptime_line + line + info;
+}
+
 function date() {
   var d = new Date();
   return d.toGMTString();
@@ -93,4 +136,12 @@ function date() {
 
 function who() {      
   return "user   console  "+ localStorage["first-visit"];
+}
+
+function uptime() {
+  var boot_time = new Date(2013, 3, 5, 3, 26, 11);
+  var now = new Date();
+
+  results = String(now.getHours()) + ":" + String(now.getMinutes()) + " up " + GetUptimeStats() + "1 user, load averages: " + (Math.random()*1).toPrecision(2) + " " + (Math.random()*1).toPrecision(2) + " " + (Math.random()*1).toPrecision(2);
+  return results;//now - boot_time;
 }
