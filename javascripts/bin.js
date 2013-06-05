@@ -1,12 +1,19 @@
 function initializeBash() {
   // Set login time
   setLoginTime();
-  
+
+  // Initialize bash history
+  localStorage['bash_history'] = JSON.stringify([]);
+  localStorage['bash_history_index'] = 0;
+
   // Add event handler for keypress
   $(document).keypress(function(e) {
       if(e.which == 13) {        
         var inputField = $('input:focus');
         var command = inputField.val();
+
+        // Handle bash history
+        createHistoryEntry(command);
 
         inputField.attr('disabled', 'disabled');
         
@@ -15,8 +22,36 @@ function initializeBash() {
         $('.command-prompt').slideDown('fast');
         $('.command-results').slideDown('slow');
         $('input').last().focus();
-      }
+        localStorage['bash_history_index'] = 0;
+      }          
   });
+
+  $(document).keydown(function(e) {
+    var bash_history = JSON.parse(localStorage["bash_history"]);      
+    var bash_history_index = parseInt(localStorage["bash_history_index"]);
+    var max_history_index = bash_history.length;
+
+    if(e.which == 38) {
+      $('input:focus').val(bash_history[bash_history_index]);
+      if ( bash_history_index < max_history_index ) {
+        localStorage['bash_history_index'] = bash_history_index + 1;
+      }
+    } else if (e.which == 40) {
+      if (bash_history_index != 0) {
+        var backwards = bash_history_index-1
+        localStorage['bash_history_index'] = backwards;      
+        $('input:focus').val(bash_history[backwards]);                
+      } else {
+        $('input:focus').val('');
+      }
+    }
+  });
+}
+
+function createHistoryEntry(command) {
+  var bash_history = JSON.parse(localStorage["bash_history"]);
+  bash_history.unshift(command);
+  localStorage['bash_history'] = JSON.stringify(bash_history);
 }
 
 function setLoginTime() {
