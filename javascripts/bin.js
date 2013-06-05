@@ -12,7 +12,7 @@ function initializeBash() {
         
         $('.command-results').last().html(execute(command));
         $('.command-results').last().append(createCommand());
-        $('.command-prompt').slideDown('2000');
+        $('.command-prompt').slideDown('fast');
         $('.command-results').slideDown('slow');
         $('input').last().focus();
       }
@@ -53,7 +53,13 @@ function moo() {
 }
 
 function clear() {
-  window.location = '/';
+  $('.command-prompt').remove()
+  $('.command-results').remove()
+  $('body').append(createCommand());
+  $('.command-prompt').first().remove();
+  $('.command-prompt').slideDown('fast');
+  $('input').last().focus();
+  return "";
 }
 
 function createCommand() {
