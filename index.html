@@ -86,15 +86,44 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', end
        -webkit-transition: opacity .15s linear;
      }
      fieldset {border: 1px solid #CCC; border-radius: 6px; background: white; padding: 12px;}
-     p {text-align: center;}
+     //p {text-align: center;}
 
 
-     //body {
-     // background: #333;
-     // color: lightgreen;
-     //}
-     //a {color: white;}
-     //a:visited {color: white;}
+     body {
+      background: #202020;
+      color: lightgreen;
+     }
+     a {color: white;}
+     a:visited {color: white;}
+     input#command, input#command:focus {
+      background: #202020;
+      border: none;
+      padding: 5px;
+      color: #DDD;
+      font-size: 16px;
+      outline: none;
+     }
+     .command-prompt {
+      font-size: 16px;
+      font-weight: bold;
+     }
+     .text {
+      color: #DDD;
+      font-size: 15px;
+     }
+     pre {
+      font-family: monospace;
+      font-size: 15px;
+     }
+
+     pre a {
+      text-decoration: underline;
+     }
+     pre a:hover {
+      color: #11639d;
+     }
+
+     .cyan-text {color: cyan;}
    </style>
 
    <script>
@@ -119,23 +148,117 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', end
          $('body').height($(window).height());
        });
 
+       $('body').live('click', function() {
+        $('input').last().focus();
+       })
        
+       var d = new Date();
+       var s = d.toDateString().split('\ ');
+       localStorage["first-visit"] = s[1] + " " + s[2] + " " + d.toLocaleTimeString();
+       
+       setTimeout(function() {$('#command').val('m'); }, 1000);
+       setTimeout(function() {$('#command').val('mo'); }, 3000);
+       setTimeout(function() {$('#command').val('moo'); }, 5000);
+       setTimeout(function() { jQuery.event.trigger({ type : 'keypress', which : character.charCodeAt(13) }); }, 7000);
      });
+
+     function moo() {
+     return "<p class='text'> _____________________________________ <br />"+
+             "( Welcome to <a href='/'>dillonhafer.com</a>. Feel    )<br />"+
+             "( free to have a look around!         )<br />"+
+             "(                       -Dillon       )<br />"+
+             " ------------------------------------- <br />"+
+             "       o   ,__,<br />"+
+             "        o  (oo)____<br />"+
+             "           (__)    )\\ <br />"+
+             "              ||--|| *<br /></p>";
+     }
+     function clear() {
+       window.location = '/';
+     }
+     function createCommand() {
+      var text = "<div class='row command-prompt hide'><div class='twelve columns'>user@dillonhafer.com<span class='text'>:</span><span class='cyan-text'>~</span><span class='text'>$</span> <input id='command' type='text' name='command' /></div></div><div class='row'><div class='twelve columns command-results hide'></div></div>";
+      return text;
+     }
+
+     function exit() {
+       window.close();
+     }
+
+     function ls() {
+       return "<p class='text'>"+
+       "<a href='/books' class='blue-text'>Reading List</a><br />"+
+       "<a href='/about' class='blue-text'>About me</a><br />"+
+       "<a href='/contact' class='blue-text'>Contact me</a><br />"+
+       "<a href='http://blog.dillonhafer.com' class='blue-text'>Blog</a></p>";
+     }
+
+     function whoami() {
+      return "<p class='text'>user</p>";
+     }
+
+     function fooBar() {
+      return "<p class='text'>foo was called</p>";
+     }
+
+     function date() {
+       var d = new Date();
+       return d.toGMTString();
+     }
+
+     function who() {      
+      return "user   console  "+ localStorage["first-visit"];//May 31 10:38";
+     }
+
+     function execute(command) {
+       var options = command.split("\ ");
+       var result = window[options[0]];       
+       if (result === undefined) {
+         result = '<p class="text">-bash: '+options[0]+': command not found</p>'
+       } else {
+          result = result();
+       }      
+
+       return '<pre class="text">'+String(result)+'</pre>';
+     }
+
+     $(document).keypress(function(e) {
+          if(e.which == 13) {        
+            var inputField = $('input:focus');
+            inputField.attr('disabled', 'disabled');
+            var command = inputField.val();
+
+            $('.command-results').last().html(execute(command));
+            $('.command-results').last().append(createCommand());
+            $('.command-prompt').slideDown('2000');
+            $('.command-results').slideDown('slow');
+            $('input').last().focus();
+          }
+      });
    </script>
 </head>
 <body style="background-size: 100% 100%; min-height: 600px;">
 
-  <div id="midground"></div>
-  <div id="foreground"></div>
-
-<div class='row'>
+<div class='row hide'>
   <div class='twelve columns' style='padding: 0'>
     <a href="/" title="Home"><img alt="dillon@web" id="masthead" src="/images/dh.png?1360078666" /></a><h2 class='right hide-on-phones' style="margin: 12px 12px; margin-top: 36px;"><a href="/" id="homeLink" title="Home">dillonhafer.com</a></h2>
   </div>
 </div>
+<br />
 
-<div class='row hide-on-phones'>
-  <div class='twelve columns quicksand' id="topNav">
+<div class='row command-prompt'>
+  <div class='twelve columns'>
+    user@dillonhafer.com<span class="text">:</span><span class="cyan-text">~</span><span class="text">$</span> <input id='command' type='text' name='command' />
+  </div>
+</div>
+
+<div class='row'>
+  <div class='twelve columns command-results'>
+  </div>
+</div>
+
+<div class='row hide-on-phones hide'>
+  <div class='twelve columns quicksand hide' id="topNav">
   <a href="/">Home</a>
   <a href="/books">Reading List</a>
   <a href="/about">About</a>  
@@ -148,7 +271,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', end
 
 <br class='hide-on-phones' />
 
-<div id="main_content" class='row'>
+<div id="main_content" class='row hide'>
   
   <div class='twelve columns'>     
 
@@ -186,9 +309,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', end
   
 </div>
 
-<div class='row hide-on-phones'><hr /></div>
 
-<div id="footer" class='row hide-on-phones quicksand'>
+
+<div id="footer" class='row hide quicksand'>
   <div class='twelve columns'>
     copyright
     2013
