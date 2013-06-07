@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>HowToInstallPostfixAsSecureRelay</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="HowToInstallPostfixAsSecureRelay"></a>
+<h1 >HowToInstallPostfixAsSecureRelay<a href="#HowToInstallPostfixAsSecureRelay" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>This page describes how to install postfix as a gateway server and how to set up internal servers to securely relay through it.</p>
+
+
+Resources:
+	<ul>
+	<li><a class="external" href="http://hans.fugal.net/blog/articles/2008/02/28/postfix-smtp-auth">http://hans.fugal.net/blog/articles/2008/02/28/postfix-smtp-auth</a></li>
+		<li><a class="external" href="https://help.ubuntu.com/community/Postfix">https://help.ubuntu.com/community/Postfix</a></li>
+		<li><a class="external" href="http://www.postfix.org/SASL_README.html">http://www.postfix.org/SASL_README.html</a></li>
+	</ul>
+
+
+	<a name="Important"></a>
+<h2 >Important<a href="#Important" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Remember if you have trouble to edit /etc/postfix/master.conf and turn on smtpd -v for verbose logging. Then watch /etc/log/main.log.</p>
+
+
+	<a name="Gateway-Server"></a>
+<h2 >Gateway Server<a href="#Gateway-Server" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The gateway server is <em>faith</em> the outside web server for the church and college. If you are adding an internal server skip down to <strong>Internal Servers</strong>.</p>
+
+
+	<p>This includes the SASL daemon but we won't be using it.<br /><pre>
+aptitude install sasl2-bin
+</pre></p>
+
+
+	<p>Alter /etc/postfix/main.conf to include the following. Make sure mynetworks only has the localhost.<br /><pre>
+# SASL
+smtpd_sasl_local_domain =
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+
+smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination
+</pre></p>
+
+
+	<p>Make /etc/postfix/sasl/smtd.conf the following<br /><pre>
+pwcheck_method: auxprop
+mech_list: plain login
+</pre></p>
+
+
+	<p>The SASL password file needs to go in /var/spool/postfix/etc/sasldb2 because postfix will be running in a chroot.<br /><pre>
+saslpasswd2 -f /var/spool/postfix/etc/sasldb2 -c -u `postconf -h myhostname` hactest
+</pre></p>
+
+
+	<p>Ensure that /var/spool/postfix/etc/sasldb2 is owned by root:root and permissions are 644.</p>
+
+
+	<p>At this point we should be able to telnet in and send an email, but our user name and password are unencrypted.<br /><pre>
+telnet pulse18media.com 25
+
+EHLO localhost
+AUTH PLAIN AGhhY3Rlc3QAaGFjdGVzdA=
+MAIL FROM:&lt;admin@pulse18.com&gt;
+RCPT TO:&lt;admin@pulse18.com&gt;
+DATA
+</pre></p>
+
+
+	<p>Note that the gibberish at the end is the result of encoding the user name hactest and password hactest through:<br /><pre>
+perl -MMIME::Base64 -e 'print encode_base64("\0hactest\0hactest");'
+</pre></p>
+
+
+	<p>Once this is working we turn on TLS by creating a key file and a crt file for the server. We copy both of those and the CA file to the server and update the main.cf file. We use "may" instead of "encrypt" for "smtpd_tls_security_level" because we don't want to require a TLS connection from localhost.<br /><pre>
+smtpd_tls_security_level = may
+smtpd_tls_cert_file=/etc/ssl/certs/wildcard.pulse18.com.crt
+smtpd_tls_key_file=/etc/ssl/private/wildcard.pulse18.com.key
+smtpd_tls_CAfile = /etc/ssl/certs/RapidSSL_CA_bundle.pem
+</pre></p>
+
+
+	<p>Note that this requires encryption from the client. May need to back that off to test and see if the clients are working.</p>
+
+
+	<p>Final main.cf on gateway server<br /><pre>
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# TLS parameters
+smtpd_tls_security_level = may
+smtpd_tls_cert_file=/etc/ssl/certs/wildcard.hylesanderson.edu.crt
+smtpd_tls_key_file=/etc/ssl/private/wildcard.hylesanderson.edu.key
+smtpd_tls_CAfile = /etc/ssl/certs/RapidSSL_CA_bundle.pem
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+# SASL
+smtpd_sasl_local_domain =
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = 
+
+myhostname = linode.linode.host
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+myorigin = /etc/mailname
+mydestination = 
+relayhost = 
+mailbox_command = 
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = ipv4
+mynetworks = 127.0.0.0/8
+
+smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination
+</pre></p>
+
+
+	<p>Also be sure to set smtp.hylesanderson.edu to point to the gateway server address and update the spf record for hylesanderson.edu</p>
+
+
+	<a name="Internal-Servers"></a>
+<h2 >Internal Servers<a href="#Internal-Servers" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+sudo aptitude install postfix
+</pre>
+
+	<p>Choose no configuration.</p>
+
+
+	<p>Use the following as /etc/postfix/main.cf -- the only change that needs to be made is myhostname<br /><pre>
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtp_tls_security_level = verify
+smtp_tls_CAfile = /etc/ssl/certs/Equifax_Secure_CA.pem
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+myhostname = hydrogen.hylesanderson.edu
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination = localdomain, localhost, localhost.localdomain, localhost
+relayhost = [smtp.hylesanderson.edu]
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = loopback-only
+
+myorigin = hylesanderson.edu
+
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options =
+</pre></p>
+
+
+	<p>Either add a new user by logging into the gateway server and running:<br /><pre>
+sudo saslpasswd2 -f /var/spool/postfix/etc/sasldb2 -c -u `postconf -h myhostname` change-me-to-your-user-name
+</pre></p>
+
+
+	<p>Or use the following:<br />User name: hac_on_campus<br />Password: dsfy7784erhj</p>
+
+
+	<p>Create /etc/postfix/sasl_passwd.<br /><pre>
+# SMTP-server user_name:password
+smtp.hylesanderson.edu hac_on_campus:dsfy7784erhj
+</pre></p>
+
+
+	<p>Run postmap on password file<br /><pre>
+postmap /etc/postfix/sasl_passwd
+</pre></p>
+
+
+	<p>Set permissions so the passwords can't be read<br /><pre>
+chmod 600 /etc/postfix/sasl_passwd
+chmod 600 /etc/postfix/sasl_passwd.db
+</pre></p>
+
+
+<pre>
+sudo service postfix restart
+</pre>
+
+	<p>Note that for redmine r2524 I had to set smtpd_use_tls to no otherwise it didn't work. See #2885.</p>
+
+
+	<p>To test if it is working:<br /><pre>
+sudo aptitude install heirloom-mailx
+ps -ely | mailx -s Testing your-email@hylesanderson.edu
+</pre></p>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>KVM</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="KVM"></a>
+<h1 >KVM<a href="#KVM" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Creating-a-VM-from-an-ISO"></a>
+<h2 >Creating a VM from an ISO<a href="#Creating-a-VM-from-an-ISO" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The simplest way to create a VM is to install from an ISO.</p>
+
+
+<pre>
+sudo virt-install \
+  --connect qemu:///system \
+  --name ender \
+  --vcpus 2 \
+  --ram 2048 \
+  --disk ~/ender,size=30 \
+  --cdrom ~/ubuntu-10.04.3-server-amd64.iso \
+  --vnc \
+  --os-type linux \
+  --os-variant virtio26 \
+  --noautoconsole
+</pre>
+
+	<p>This will create and start a VM. A VNC server will be listening on localhost:5900 (or the first available port after that if other VM's are already running). Connect to the VNC server and install the OS normally.</p>
+
+
+	<p>Be sure to install acpid so the guest will do a graceful shutdown when the host is shutdown.</p>
+
+
+	<a name="Creating-a-VM-via-Script"></a>
+<h2 >Creating a VM via Script<a href="#Creating-a-VM-via-Script" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>A light-weight VM can be created by using the vmbuilder script. I believe it uses debbootstap in a chroot to set up a core install.</p>
+
+
+	<p>This would be the way to go if we wanted to create a lot of VM's, but I have found it simpler just to run through the normal install.</p>
+
+
+<pre>
+sudo vmbuilder kvm ubuntu \
+  --suite lucid \
+  --flavour virtual \
+  --arch amd64 \
+  --cpus 2 \
+  --mem 1024 \
+  -o \
+  --libvirt qemu:///system \
+  --ip 10.250.2.28 \
+  --mask 255.255.0.0 \
+  --net 10.250.0.0 \
+  --bcast 10.250.255.255 \
+  --gw 10.250.2.2 \
+  --dns 10.250.2.254 \
+  --user jackc \
+  --name 'Jack Chrstensen' \
+  --pass secret \
+  --addpkg git-core \
+  --addpkg etckeeper \
+  --addpkg htop \
+  --addpkg diakonos \
+  --addpkg ack-grep \
+  --addpkg tmux \
+  --addpkg openssh-server \
+  --addpkg acpid
+</pre>
+</body>
+</html>

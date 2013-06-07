@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Ruby on Rails Setup on Ubuntu</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Ruby-on-Rails-Setup-on-Ubuntu"></a>
+<h1 >Ruby on Rails Setup on Ubuntu<a href="#Ruby-on-Rails-Setup-on-Ubuntu" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Passenger 3.0.9 is incompatible with Ruby 1.9.3 as of 11/11/2011. For the time being use Ruby 1.9.2 on production servers.</p>
+
+
+	<a name="Prerequisites"></a>
+<h2 >Prerequisites<a href="#Prerequisites" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Install build tools.<br /><pre>
+sudo aptitude install build-essential
+</pre></p>
+
+
+	<p>Install OpenSSL dev libraries.<br /><pre>
+sudo aptitude install libssl-dev
+</pre></p>
+
+
+	<p>Install readline dev libraries for ruby compilation<br /><pre>
+sudo aptitude install libreadline-dev
+</pre></p>
+
+
+	<p>XML library for nokogiri<br /><pre>
+sudo aptitude install libxslt-dev libxml2-dev
+</pre></p>
+
+
+	<p>libyaml for ruby 1.9.3<br /><pre>
+sudo aptitude install libyaml-dev
+</pre></p>
+
+
+	<a name="Ruby"></a>
+<h2 >Ruby<a href="#Ruby" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Install Ruby 1.8 <strong>or</strong> 1.9. Canvas LMS requires Rails 2.3.x and Ruby 1.8.x. All other Ruby and Rails projects should use 1.9.x</p>
+
+
+	<a name="Ruby-18x"></a>
+<h3 >Ruby 1.8.x<a href="#Ruby-18x" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Download Ruby source code 1.8.7 p358 (or the latest version of the 1.8 branch)<br /><pre>
+wget ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p358.tar.bz2
+</pre></p>
+
+
+	<p>If 1.8 and 1.9 are to be installed side by side then consider installing to the user who needs 1.8.7's directory. (./configure --prefix=$HOME/.rubies/1.8.7-p358 and don't use sudo)</p>
+
+
+	<p>By default this will install in /usr/local/bin, /usr/local/lib<br /><pre>
+tar -xjvf ruby-1.8.7-p358.tar.bz2
+cd ruby-1.8.7-p358/
+./configure
+make
+make test
+sudo make install
+</pre></p>
+
+
+	<p>Install ruby gems 1.8.15 (or the latest version -- or if using redmine you may need to specifically install an old version like 1.5.2)<br /><pre>
+cd ~
+wget http://production.cf.rubygems.org/rubygems/rubygems-1.8.15.tgz
+tar -xzvf rubygems-1.8.15.tgz
+cd rubygems-1.8.15/
+sudo ruby setup.rb
+</pre></p>
+
+
+	<a name="Ruby-19x"></a>
+<h3 >Ruby 1.9.x<a href="#Ruby-19x" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Download Ruby source code 1.9.3 p194 (or the latest version of the 1.9.3 branch)<br /><pre>
+wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p194.tar.bz2
+</pre></p>
+
+
+	<p>By default this will install in /usr/local/bin, /usr/local/lib<br /><pre>
+tar -xjvf ruby-1.9.3-p194.tar.bz2 
+cd ruby-1.9.3-p194/
+./configure 
+make
+make test
+sudo make install
+</pre></p>
+
+
+	<p>Update Rubygems<br /><pre>
+sudo gem update --system
+</pre></p>
+
+
+	<a name="Rails"></a>
+<h2 >Rails<a href="#Rails" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Install rails<br /><pre>
+sudo gem install --no-rdoc --no-ri rails
+</pre></p>
+
+
+	<p>Install native PostgreSQL-Ruby bindings (if using PostgreSQL)<br /><pre>
+sudo aptitude install libpq-dev
+sudo gem install --no-rdoc --no-ri pg
+</pre></p>
+
+
+	<a name="Production-Server"></a>
+<h2 >Production Server<a href="#Production-Server" class="wiki-anchor">&para;</a></h2>
+
+
+	<a name="Apache-22-Configuration"></a>
+<h2 >Apache 2.2 Configuration<a href="#Apache-22-Configuration" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Install apache2 and mod x-sendfile.<br /><pre>
+sudo aptitude install apache2 libapache2-mod-xsendfile
+</pre></p>
+
+
+	<p>Install Passenger (mod_rails): <a class="external" href="http://www.modrails.com/install.html">http://www.modrails.com/install.html</a></p>
+
+
+	<p>Put passenger config in /etc/apache2/conf.d/passenger instead of apache2.conf</p>
+
+
+	<p>Include extra config for passenger.<br /><pre>
+PassengerMaxPoolSize 30
+PassengerFriendlyErrorPages off
+
+# Rails 3.1 prepared statements incompatible with faster spawn methods.
+PassengerSpawnMethod conservative
+</pre></p>
+
+
+	<p>Enable ssl for apache2 -- see <a class="external" href="http://www.debian-administration.org/articles/349">http://www.debian-administration.org/articles/349</a><br /><pre>
+sudo a2enmod ssl
+</pre></p>
+
+
+	<p>Ensure SSL crt file is in /etc/ssl/certs and key file is in /etc/ssl/private. If other HAC services have already been installed in the server the wildcard cert should already be there. Otherwise it will need to be installed.</p>
+
+
+	<p>Enable expires module<br /><pre>
+sudo a2enmod expires
+</pre></p>
+
+
+	<p>Disable default site.<br /><pre>
+a2dissite default
+</pre></p>
+</body>
+</html>

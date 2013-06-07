@@ -31,8 +31,8 @@ function initializeBash() {
     var bash_history_index = parseInt(localStorage["bash_history_index"]);
     var max_history_index = bash_history.length;
 
-    if(e.which == 38) {
-      $('input:focus').val(bash_history[bash_history_index]);
+    if(e.which == 38) {      
+      $('input:focus').val(bash_history[bash_history_index]);      
       if ( bash_history_index < max_history_index ) {
         localStorage['bash_history_index'] = bash_history_index + 1;
       }
@@ -40,7 +40,7 @@ function initializeBash() {
       if (bash_history_index != 0) {
         var backwards = bash_history_index-1
         localStorage['bash_history_index'] = backwards;      
-        $('input:focus').val(bash_history[backwards]);                
+        $('input:focus').val(bash_history[backwards]);              
       } else {
         $('input:focus').val('');
       }
@@ -49,9 +49,11 @@ function initializeBash() {
 }
 
 function createHistoryEntry(command) {
-  var bash_history = JSON.parse(localStorage["bash_history"]);
-  bash_history.unshift(command);
-  localStorage['bash_history'] = JSON.stringify(bash_history);
+  if (command != '') {
+    var bash_history = JSON.parse(localStorage["bash_history"]);
+    bash_history.unshift(command);
+    localStorage['bash_history'] = JSON.stringify(bash_history);
+  }
 }
 
 function setLoginTime() {
@@ -61,18 +63,18 @@ function setLoginTime() {
 }
 
 function execute(command) {
-  var params = command.split("\ ");
-  var cmd = params[0];
-  var options = params.slice(1, params.length);
-  var result = window[cmd];
+  if (command != '') {      
+    var params = command.split(' ');
+    var cmd = params[0];
+    var options = params.slice(1, params.length);
+    var result = window[cmd](options);
 
-  if (command == '') {
-    result = "";
-  } else if (result === undefined) {
-    result = '<p class="text">-bash: '+cmd+': command not found</p>'
+    if (result === undefined) {
+      result = '<p class="text">-bash: '+cmd+': command not found</p>'
+    }      
   } else {
-    result = result();
-  }      
+    result = "";
+  }
 
   return '<pre class="text">'+String(result)+'</pre>';
 }
@@ -134,7 +136,7 @@ function GetUptimeStats(){
   return out;
 }
 
-function ls() {
+function ls(options) {
   return "<p class='text'>"+
         "<a href='/books' class='blue-text'>Reading List</a><br />"+
         "<a href='/about' class='blue-text'>About me</a><br />"+
@@ -146,7 +148,18 @@ function whoami() {
   return "<p class='text'>user</p>";
 }
 
-function fooBar() {
+function cd(path) {  
+  var base_url = Array(path)
+  var url = String(base_url[0])+'.html'; 
+  var foo = ''
+  $.get(url, function(data) { foo = data; });
+  setTimeout(console.log(foo), 2000);
+  console.log(foo);
+  return String(foo);
+}
+
+function fooBar(options) {
+  console.log(options)
   return "<p class='text'>foo was called</p>";
 }
 

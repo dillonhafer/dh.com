@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>HowToInstallAptMirror</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="HowToInstallAptMirror"></a>
+<h1 >HowToInstallAptMirror<a href="#HowToInstallAptMirror" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Install<br /><pre>
+sudo aptitude install apt-mirror
+</pre></p>
+
+
+	<p>Configure where to mirror from in /etc/apt/mirror.list<br /><pre>
+############# config ##################
+#
+# set base_path    /var/spool/apt-mirror
+#
+# if you change the base path you must create the directories below with write privileges
+#
+# set mirror_path  $base_path/mirror
+# set skel_path    $base_path/skel
+# set var_path     $base_path/var
+# set cleanscript $var_path/clean.sh
+# set defaultarch  &lt;running host architecture&gt;
+set nthreads     20
+set _tilde 0
+#
+############# end config ##############
+
+deb-i386 http://mirror.cs.umn.edu/ubuntu jaunty main restricted universe multiverse
+deb-i386 http://mirror.cs.umn.edu/ubuntu jaunty-updates main restricted universe multiverse
+deb-i386 http://mirror.cs.umn.edu/ubuntu jaunty-security main restricted universe multiverse
+
+deb-amd64 http://mirror.cs.umn.edu/ubuntu jaunty main restricted universe multiverse
+deb-amd64 http://mirror.cs.umn.edu/ubuntu jaunty-updates main restricted universe multiverse
+deb-amd64 http://mirror.cs.umn.edu/ubuntu jaunty-security main restricted universe multiverse
+
+deb-i386 http://mirror.cs.umn.edu/ubuntu karmic main restricted universe multiverse
+deb-i386 http://mirror.cs.umn.edu/ubuntu karmic-updates main restricted universe multiverse
+deb-i386 http://mirror.cs.umn.edu/ubuntu karmic-security main restricted universe multiverse
+
+deb-amd64 http://mirror.cs.umn.edu/ubuntu karmic main restricted universe multiverse
+deb-amd64 http://mirror.cs.umn.edu/ubuntu karmic-updates main restricted universe multiverse
+deb-amd64 http://mirror.cs.umn.edu/ubuntu karmic-security main restricted universe multiverse
+
+#deb http://archive.ubuntu.com/ubuntu jaunty main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu jaunty-updates main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu jaunty-backports main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu jaunty-security main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu jaunty-proposed main restricted universe multiverse
+
+#deb-src http://archive.ubuntu.com/ubuntu jaunty main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu jaunty-updates main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu jaunty-backports main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu jaunty-security main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu jaunty-proposed main restricted universe multiverse
+
+clean http://archive.ubuntu.com/ubuntu
+</pre></p>
+
+
+	<p>Run apt-mirror<br /><pre>
+sudo -u apt-mirror apt-mirror
+</pre></p>
+
+
+	<p>Make sure apache is installed.</p>
+
+
+	<p>Make mirror available through apache<br /><pre>
+sudo ln -s /var/spool/apt-mirror/mirror/us.archive.ubuntu.com/ubuntu/ /var/www/ubuntu
+</pre></p>
+
+
+	<p>To update mirror simply rerun apt-mirror<br /><pre>
+sudo -u apt-mirror apt-mirror
+</pre></p>
+</body>
+</html>

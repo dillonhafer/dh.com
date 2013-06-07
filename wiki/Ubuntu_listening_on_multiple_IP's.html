@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Ubuntu listening on multiple IP&#x27;s</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Ubuntu-listening-on-multiple-IPs"></a>
+<h1 >Ubuntu listening on multiple IP's<a href="#Ubuntu-listening-on-multiple-IPs" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>See example below. Note in particular that the aliases do not have broadcast addresses. This can cause them not to start at boot time. See bottom of <a class="external" href="https://bugs.launchpad.net/debian/+source/ifupdown/+bug/114457">https://bugs.launchpad.net/debian/+source/ifupdown/+bug/114457</a></p>
+
+
+<pre>
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet static
+    address 10.250.2.249
+    netmask 255.255.0.0
+    network 10.250.0.0
+    broadcast 10.250.255.255
+    gateway 10.250.2.2
+    # dns-* options are implemented by the resolvconf package, if installed
+    dns-nameservers 10.250.2.254
+    dns-search hylesanderson.edu
+
+# students
+auto eth0:0
+iface eth0:0 inet static
+        address 10.250.2.81
+        netmask 255.255.0.0
+        network 10.250.0.0
+
+# online
+auto eth0:1
+iface eth0:1 inet static
+        address 10.250.2.247
+        netmask 255.255.0.0
+        network 10.250.0.0
+</pre>
+</body>
+</html>

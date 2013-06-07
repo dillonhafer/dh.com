@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Linux and Samba</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Linux-and-Samba"></a>
+<h1 >Linux and Samba<a href="#Linux-and-Samba" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>See <a href="Alligator.html" class="wiki-page new">Alligator</a> for instructions on how to add users and directories to the main college file server.</p>
+
+
+	<a name="Server"></a>
+<h2 >Server<a href="#Server" class="wiki-anchor">&para;</a></h2>
+
+
+	<a name="Simple-User-Security"></a>
+<h3 >Simple User Security<a href="#Simple-User-Security" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Mostly taken from <a class="external" href="http://www.samba.org/samba/docs/man/Samba-HOWTO-Collection/FastStart.html#id2546704">http://www.samba.org/samba/docs/man/Samba-HOWTO-Collection/FastStart.html#id2546704</a>.</p>
+
+
+	<p>Use user security in smb.conf</p>
+
+
+	<p>Use the special homes section to share users home folders.</p>
+
+
+	<p>Create users on linux side then add to smb. Use disabled-password and disabled-login to prevent logging into linux with account. Remove all world permissions.<br /><pre>
+adduser --disabled-password --disabled-login johns
+smbpasswd -a johns
+chmod 750 /home/user_name
+</pre></p>
+
+
+	<p>Example homes share in smb.conf:<br /><pre>
+[homes]
+   comment = Home Directories
+   browseable = no
+
+# By default, the home directories are exported read-only. Change the
+# next parameter to 'no' if you want to be able to write to them.
+   read only = no
+
+# File creation mask is set to 0700 for security reasons. If you want to
+# create files with group=rw permissions, set next parameter to 0775.
+   create mask = 0700
+
+# Directory creation mask is set to 0700 for security reasons. If you want to
+# create dirs. with group=rw permissions, set next parameter to 0775.
+   directory mask = 0700
+
+# By default, \\server\username shares can be connected to by anyone
+# with access to the samba server.  Un-comment the following parameter
+# to make sure that only "username" can connect to \\server\username
+# This might need tweaking when using external authentication schemes
+   valid users = %S
+</pre></p>
+
+
+	<p>Shared directories should have the mode set to force group of files in the directory to the group of the directory.</p>
+
+
+<pre>
+chmod 770 /path/to/directory
+chmod g+s /path/to/directory
+</pre>
+
+	<p>Example share in smb.conf:<br /><pre>
+[academics]
+ comment = Academics
+ path = /home/academics
+ writable = yes
+ create mask = 0770
+ directory mask = 0770
+</pre></p>
+
+
+	<p>Add user to group<br /><pre>
+adduser user group
+</pre></p>
+
+
+	<a name="Real-Simple-Share-Protected-By-Linux-File-Permissions"></a>
+<h3 >Real Simple Share Protected By Linux File Permissions<a href="#Real-Simple-Share-Protected-By-Linux-File-Permissions" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+[workgroups]
+  path = /home/workgroups
+  writable = yes
+  inherit permissions = yes
+</pre>
+
+	<p>Just set the owner, group, and permissions of each item in the share properly and let linux file permissions handle everything else.</p>
+
+
+	<a name="IP-Restricted-Share"></a>
+<h3 >IP Restricted Share<a href="#IP-Restricted-Share" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>This is totally public to any address listed in <em>hosts allow</em> and totally blocked to everyone else.</p>
+
+
+	<p>Example:<br /><pre>
+[yearbook]
+  comment = Public Folder
+  path = /var/disk2/yearbook
+  public = yes
+  writable = yes
+  create mask = 0777
+  directory mask = 0777
+  force user = nobody
+  force group = nogroup
+  hosts deny = all
+  hosts allow = 10.250.8.0/24 127.0.0.1
+</pre></p>
+
+
+	<a name="Public-Share"></a>
+<h3 >Public Share<a href="#Public-Share" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Example:<br /><pre>
+[public]
+  comment = Public Folder
+  path = /home/public
+  public = yes
+  writable = yes
+  create mask = 0777
+  directory mask = 0777
+  force user = nobody
+  force group = nogroup
+</pre></p>
+
+
+	<a name="Linux-Client"></a>
+<h2 >Linux Client<a href="#Linux-Client" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Note that the IP address is used instead of the NetBIOS name. cifs will not resolve NetBIOS names by default. See <a class="external" href="https://help.ubuntu.com/community/MountWindowsSharesPermanently">https://help.ubuntu.com/community/MountWindowsSharesPermanently</a> for more information. Some utilities may try NetBIOS, but even they will not since we are using OpenDNS. The problem is if a name is used it will try to resolve with DNS before WINS. This is especially important when using OpenDNS. The problem is OpenDNS will resolve to an "Oops" page instead of not resolving at all. So instead of then trying WINS to resolve the name it gives up because it can't connect with Samba to the OpenDNS server the name resolved to. So basically we should totally avoid NetBIOS names and use raw IP's or DNS.</p>
+
+
+	<a name="Test-access"></a>
+<h3 >Test access<a href="#Test-access" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+smbclient //123.123.123.123/share_name -Uuser_name%password
+</pre>
+
+	<a name="Mounting-a-share"></a>
+<h3 >Mounting a share<a href="#Mounting-a-share" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Here is a sample command to mount a Samba share on a linux machine.<br /><pre>
+sudo mount -t cifs //192.168.0.3/yearbook /home/temp-smb
+</pre></p>
+
+
+	<a name="Other-useful-comands"></a>
+<h3 >Other useful comands<a href="#Other-useful-comands" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>To view other user's history<br /><pre>
+sudo cat /home/user/.bash_history
+</pre></p>
+
+
+	<a name="Permanent-Windows-Shares"></a>
+<h2 >Permanent Windows Shares<a href="#Permanent-Windows-Shares" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The home editions do not save passwords. That makes it necessary to use a batch file in the startup folder. Example:</p>
+
+
+<pre>
+net use z: \\10.250.2.25\share_name password /USER:user_name
+</pre>
+
+	<a name="Logging-all-file-activity"></a>
+<h2 >Logging all file activity<a href="#Logging-all-file-activity" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Configure the full_audit module in /etc/samba/smb.conf<br /><pre>
+vfs objects = full_audit
+
+full_audit:prefix = %u|%I|%m|%S
+full_audit:success = mkdir rename unlink rmdir pwrite
+full_audit:failure = none
+full_audit:facility = LOCAL7
+full_audit:priority = NOTICE
+</pre></p>
+
+
+	<p>Configure rsyslog to separate smb logs -- create file  /etc/rsyslog.d/30-samba.conf<br /><pre>
+if $programname == 'smbd_audit' then /var/log/samba/log.audit
+if $programname == 'smbd_audit' then ~
+</pre></p>
+
+
+	<p>Note that the name of the file is important as it determines the order these rules are run in. If this is run after the default rule then this will still be logged to the syslog.</p>
+
+
+	<a name="References"></a>
+<h2 >References<a href="#References" class="wiki-anchor">&para;</a></h2>
+
+
+	<ul>
+	<li><a href="http://www.samba.org/samba/docs/man/Samba-HOWTO-Collection/index.html" class="external">The Official Samba 3.2.x HOWTO and Reference Guide</a></li>
+		<li><a href="http://us1.samba.org/samba/docs/man/Samba-Guide/" class="external">Samba-3 by Example</a></li>
+		<li><a class="external" href="http://a32.me/2009/10/samba-audit-trail/">http://a32.me/2009/10/samba-audit-trail/</a></li>
+		<li><a class="external" href="http://moiristo.wordpress.com/2009/08/10/samba-logging-user-activity/">http://moiristo.wordpress.com/2009/08/10/samba-logging-user-activity/</a></li>
+	</ul>
+</body>
+</html>

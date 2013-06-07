@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Redmine</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Redmine"></a>
+<h1 >Redmine<a href="#Redmine" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="How-to-get-Redmine-to-Receive-Emails"></a>
+<h2 >How to get Redmine to Receive Emails<a href="#How-to-get-Redmine-to-Receive-Emails" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>redmine user's crontab:<br /><pre>
+MAILTO=jackc@hylesanderson.edu
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11:/usr/games
+
+# m h  dom mon dow   command
+*/15 * * * * rake -f /home/redmine/redmine.hylesanderson.edu/Rakefile redmine:email:receive_imap RAILS_ENV="production" host=imap.gmail.com port=993 ssl=1 username=redmine@hylesanderson.edu password=fg7894hdfhjs &gt; /dev/null
+</pre></p>
+
+
+	<a name="How-to-Merge-Redmine-Users"></a>
+<h2 >How to Merge Redmine Users<a href="#How-to-Merge-Redmine-Users" class="wiki-anchor">&para;</a></h2>
+
+
+<pre><code class="ruby syntaxhl"><span class="CodeRay"><span class="line-numbers"> 1</span><span class="keyword">def</span> <span class="constant">User</span>.<span class="function">merge</span>( keep_id, delete_id )
+<span class="line-numbers"> 2</span>  <span class="constant">User</span>.transaction <span class="keyword">do</span>
+<span class="line-numbers"> 3</span>    [ 
+<span class="line-numbers"> 4</span>      [ <span class="constant">WikiContent</span>::<span class="constant">Version</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"> 5</span>      [ <span class="constant">WikiContent</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"> 6</span>      [ <span class="constant">Watcher</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"> 7</span>      [ <span class="constant">UserPreference</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"> 8</span>      [ <span class="constant">Token</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"> 9</span>      [ <span class="constant">TimeEntry</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers"><strong>10</strong></span>      [ <span class="constant">Query</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">11</span>      [ <span class="constant">News</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">12</span>      [ <span class="constant">Message</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">13</span>      [ <span class="constant">Member</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">14</span>      [ <span class="constant">Journal</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">user_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">15</span>      [ <span class="constant">IssueCategory</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">assigned_to_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">16</span>      [ <span class="constant">Issue</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">17</span>      [ <span class="constant">Issue</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">assigned_to_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">18</span>      [ <span class="constant">Comment</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ],
+<span class="line-numbers">19</span>      [ <span class="constant">Attachment</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">author_id</span><span class="delimiter">&quot;</span></span> ]
+<span class="line-numbers"><strong>20</strong></span>    ].each <span class="keyword">do</span> |model_class, fk|
+<span class="line-numbers">21</span>      model_class.all( <span class="symbol">:conditions</span> =&gt; { fk =&gt; delete_id } ).each <span class="keyword">do</span> |m|
+<span class="line-numbers">22</span>        m.update_attributes! fk =&gt; keep_id
+<span class="line-numbers">23</span>      <span class="keyword">end</span>
+<span class="line-numbers">24</span>    <span class="keyword">end</span>
+<span class="line-numbers">25</span>
+<span class="line-numbers">26</span>    <span class="constant">User</span>.find( delete_id ).destroy
+<span class="line-numbers">27</span>  <span class="keyword">end</span>
+<span class="line-numbers">28</span><span class="keyword">end</span>
+</span></code></pre>
+
+	<a name="How-to-Script-Creating-Issues"></a>
+<h2 >How to Script Creating Issues<a href="#How-to-Script-Creating-Issues" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>This example uses ruby and cURL to crease issues for the KJV study Bible.</p>
+
+
+<pre><code class="ruby syntaxhl"><span class="CodeRay"><span class="line-numbers"> 1</span>(<span class="integer">421</span>..<span class="integer">455</span>).each <span class="keyword">do</span> |n|
+<span class="line-numbers"> 2</span>  system <span class="string"><span class="delimiter">&lt;&lt;-END_CMD</span></span><span class="string"><span class="content"></span></span>
+<span class="line-numbers"> 3</span><span class="string"><span class="content">    curl --cookie _session_id=4f26f96127fb4a1ff3fce8a6c3b37372 </span><span class="char">\</span></span>
+<span class="line-numbers"> 4</span><span class="string"><span class="char"></span><span class="content">    -F issue[tracker_id]=&quot;7&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"> 5</span><span class="string"><span class="char"></span><span class="content">    -F issue[subject]=&quot;Page </span><span class="inline"><span class="inline-delimiter">#{</span>n<span class="inline-delimiter">}</span></span><span class="content">&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"> 6</span><span class="string"><span class="char"></span><span class="content">    -F issue[description]=&quot;[[Page </span><span class="inline"><span class="inline-delimiter">#{</span>n<span class="inline-delimiter">}</span></span><span class="content">]]&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"> 7</span><span class="string"><span class="char"></span><span class="content">    -F issue[status_id]]=&quot;1&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"> 8</span><span class="string"><span class="char"></span><span class="content">    -F issue[priority_id]=&quot;4&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"> 9</span><span class="string"><span class="char"></span><span class="content">    -F issue[assigned_to_id]=&quot;&quot; </span><span class="char">\</span></span>
+<span class="line-numbers"><strong>10</strong></span><span class="string"><span class="char"></span><span class="content">    -F issue[category_id]=&quot;&quot; </span><span class="char">\</span></span>
+<span class="line-numbers">11</span><span class="string"><span class="char"></span><span class="content">    -F issue[fixed_version_id]=&quot;26&quot; </span><span class="char">\</span></span>
+<span class="line-numbers">12</span><span class="string"><span class="char"></span><span class="content">    -F issue[start_date]=&quot;2008-11-10&quot; </span><span class="char">\</span></span>
+<span class="line-numbers">13</span><span class="string"><span class="char"></span><span class="content">    -F issue[due_date]=&quot;&quot; </span><span class="char">\</span></span>
+<span class="line-numbers">14</span><span class="string"><span class="char"></span><span class="content">    -F issue[estimated_hours]=&quot;&quot; </span><span class="char">\</span></span>
+<span class="line-numbers">15</span><span class="string"><span class="char"></span><span class="content">    -F issue[done_ratio]=&quot;0&quot; http://redmine.hylesanderson.edu/projects/kjv-study-2011/issues/new</span><span class="delimiter"></span></span>
+<span class="line-numbers">16</span><span class="string"><span class="delimiter">  END_CMD</span></span>
+<span class="line-numbers">17</span><span class="keyword">end</span>
+</span></code></pre>
+
+	<a name="How-to-Script-Attaching-Files"></a>
+<h2 >How to Script Attaching Files<a href="#How-to-Script-Attaching-Files" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+curl --cookie _session_id=4f26f96127fb4a1ff3fce8a6c3b37372 -F attachments[1][file]=@"./Tutoring.pdf" http://redmine.hylesanderson.edu/wiki/college-wiki/Policies/add_attachment
+</pre>
+
+	<a name="Integration-with-Git"></a>
+<h2 >Integration with Git<a href="#Integration-with-Git" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Git user needs to be able to sudo to the redmine user. Edit the sudoers to allow this.<br /><pre>
+visudo
+</pre></p>
+
+
+	<p>Add the following line:<br /><pre>
+git ALL=(redmine) NOPASSWD: /var/www/redmine/redmine-fetch-changesets
+</pre></p>
+
+
+	<p>/var/www/redmine/redmine-fetch-changesets<br /><pre>
+#!/bin/sh
+
+# set path because SVN clears it
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+
+cd /var/www/redmine/redmine.hylesanderson.edu/
+script/runner "Repository.fetch_changesets" -e production
+</pre></p>
+
+
+	<p>Add the following line to hooks/post-receive in the repository to be linked with Redmine.<br /><pre>
+sudo -u redmine /var/www/redmine/redmine-fetch-changesets &#38;
+</pre></p>
+
+
+	<p>The ampersand to fork at the end is so pushes aren't delayed while Redmine is updating.</p>
+</body>
+</html>

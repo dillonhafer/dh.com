@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Git</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Git"></a>
+<h1 >Git<a href="#Git" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Initial-Setup"></a>
+<h2 >Initial Setup<a href="#Initial-Setup" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Before doing any development on a new machine configure git with your name and email.</p>
+
+
+<pre>
+git config --global user.name "Firstname Lastname" 
+git config --global user.email "your_email@youremail.com" 
+</pre>
+
+	<a name="Central-Repository"></a>
+<h2 >Central Repository<a href="#Central-Repository" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The git repository can be accessed at manage.pulse18media.com. It is stored on linode. Connect over SSH with the user name <em>git</em>.</p>
+
+
+	<a name="Checking-out-an-existing-repository"></a>
+<h2 >Checking out an existing repository<a href="#Checking-out-an-existing-repository" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+git clone ssh://git@manage.pulse18media.com/var/git/new_repo.git
+</pre>
+
+	<a name="Basic-Workflow"></a>
+<h2 >Basic Workflow<a href="#Basic-Workflow" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Ensure the master branch is checked out.<br /><pre>
+git checkout master
+</pre></p>
+
+
+	<p>Pull in any changes from the remote repository.<br /><pre>
+git pull
+</pre></p>
+
+
+	<p>Create a new branch.<br /><pre>
+git checkout -b my_feature
+</pre></p>
+
+
+	<p>Make changes to files.</p>
+
+
+	<p>Add the files you have changed to the staging area.</p>
+
+
+	<p>To add a specific file:<br /><pre>
+git add path/to/changed/file
+</pre></p>
+
+
+	<p>To add all changed files in the repository at once by adding the current directory path:<br /><pre>
+git add .
+</pre></p>
+
+
+	<p>To delete a file from repository:<br /><pre>
+git rm path/to/file
+</pre></p>
+
+
+	<p>Commit changes to local repository.<br /><pre>
+git commit
+</pre></p>
+
+
+	<p>Keep adding, editing, deleting, and committing until the change is complete.</p>
+
+
+	<p>Checkout master again.<br /><pre>
+git checkout master
+</pre></p>
+
+
+	<p>Re-pull to ensure you have the most recent changes on the remote repository.<br /><pre>
+git pull
+</pre></p>
+
+
+	<p>Merge feature branch with squash option to mash entire feature into one commit.<br /><pre>
+git merge --squash my_feature
+</pre></p>
+
+
+	<p>The merge puts everything in the staging area but does not automatically commit.<br /><pre>
+git commit
+</pre></p>
+
+
+	<p>Push your feature to the remote repository.<br /><pre>
+git push
+</pre></p>
+
+
+	<p>Delete your feature branch. (But you may want to wait a while to ensure you don't need to go back to any intermediate commits)<br /><pre>
+git branch -d my_feature
+</pre></p>
+
+
+	<a name="View-current-status"></a>
+<h2 >View current status<a href="#View-current-status" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+git status
+</pre>
+
+	<a name="Revert-an-uncommitted-change"></a>
+<h2 >Revert an uncommitted change<a href="#Revert-an-uncommitted-change" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+git checkout path/to/file/to/restore
+</pre>
+
+	<a name="Changing-the-current-branch"></a>
+<h2 >Changing the current branch<a href="#Changing-the-current-branch" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>List local branches<br /><pre>
+git branch
+</pre></p>
+
+
+	<p>List remote branches<br /><pre>
+git branch -r
+</pre></p>
+
+
+	<p>List local and remote branches<br /><pre>
+git branch -a
+</pre></p>
+
+
+<pre>
+git checkout branch_name
+</pre>
+
+	<a name="Deleting-a-branch"></a>
+<h2 >Deleting a branch<a href="#Deleting-a-branch" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Delete a local branch<br /><pre>
+git branch -d branch_name
+</pre></p>
+
+
+	<p>Delete the branch remotely -- note the colon<br /><pre>
+git push origin :branch_name
+</pre></p>
+
+
+	<a name="Cleaning-up-deleted-remote-branches"></a>
+<h2 >Cleaning up deleted remote branches<a href="#Cleaning-up-deleted-remote-branches" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+git remote prune origin
+</pre>
+
+	<a name="Undo-a-commit"></a>
+<h2 >Undo a commit<a href="#Undo-a-commit" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Only if the commit has not been pushed:<br /><pre>
+git reset --soft HEAD^
+</pre></p>
+
+
+	<a name="Creating-a-new-repository"></a>
+<h2 >Creating a new repository<a href="#Creating-a-new-repository" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>On the git server (run commands as user <strong>git</strong>):</p>
+
+
+<pre>
+cd /var/git
+mkdir new_repo.git
+cd new_repo.git
+git --bare init
+cp /var/git/database.git/hooks/post-receive hooks
+</pre>
+
+	<p>On the client machine:</p>
+
+
+<pre>
+mkdir new_repo
+cd new_repo
+touch tmp.txt
+git init
+git add .
+git commit -m 'Initial commit'
+git remote add origin ssh://git@dev.fbchammond.com/var/git/new_repo.git
+git push --set-upstream origin master
+</pre>
+
+	<a name="Resources"></a>
+<h2 >Resources<a href="#Resources" class="wiki-anchor">&para;</a></h2>
+
+
+	<ul>
+	<li><a class="external" href="http://progit.org/book/">http://progit.org/book/</a> -- whole book on git</li>
+		<li><a class="external" href="http://book.git-scm.com/index.html">http://book.git-scm.com/index.html</a> -- another whole book on git</li>
+		<li><a class="external" href="http://gitref.org/">http://gitref.org/</a> -- reference material</li>
+		<li><a class="external" href="http://help.github.com/">http://help.github.com/</a> -- GitHub's help pages</li>
+	</ul>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Base Ubuntu Server Setup</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Base-Ubuntu-Server-Setup"></a>
+<h1 >Base Ubuntu Server Setup<a href="#Base-Ubuntu-Server-Setup" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Run standard server install. In the disk partitioning step accept the default of LVM. When choosing packages to install only choose OpenSSH.</p>
+
+
+	<p>Install and initialize etckeeper<br /><pre>
+sudo aptitude install git-core etckeeper
+</pre></p>
+
+
+	<p>Edit /etc/etckeeper/etckeeper.conf and change VCS from bzr to git</p>
+
+
+<pre>
+sudo etckeeper init
+sudo etckeeper commit "initial import" 
+</pre>
+
+	<p>Set up SSH key authentication. Simplest way is to copy the authorized_keys file from a working server to ~/.ssh/authorized_keys.</p>
+
+
+	<p>Disallow password logins via SSH. Edit /etc/ssh/sshd_config. Set PasswordAuthentication to no</p>
+
+
+	<p>Update package list and install updates<br /><pre>
+sudo aptitude update
+sudo aptitude full-upgrade
+</pre></p>
+
+
+	<p>Install standard extra packages<br /><pre>
+sudo aptitude install htop iotop mc diakonos ack-grep tmux mtr dstat acpid
+</pre></p>
+
+
+	<p>Make sure time is kept synced automatically<br /><pre>
+sudo aptitude install ntp
+</pre></p>
+
+
+	<p>Install postfix and setup according to <a href="HowToInstallPostfixAsSecureRelay.html" class="wiki-page">HowToInstallPostfixAsSecureRelay</a></p>
+</body>
+</html>

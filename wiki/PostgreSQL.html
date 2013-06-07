@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>PostgreSQL</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="PostgreSQL"></a>
+<h1 >PostgreSQL<a href="#PostgreSQL" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Installation-on-Ubuntu-1004"></a>
+<h2 >Installation on Ubuntu 10.04<a href="#Installation-on-Ubuntu-1004" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>We are using PostgreSQL 9.1. That is not available from the normal 10.04 repository so we have to use a backport.</p>
+
+
+	<p>Note: Specifically choose version of PostgreSQL so it does not get automatically upgraded when new backports are released or when doing a dist upgrade.</p>
+
+
+<pre>
+sudo aptitude install python-software-properties
+sudo add-apt-repository ppa:pitti/postgresql
+sudo aptitude update
+sudo aptitude full-upgrade
+
+# To install server
+sudo aptitude install postgresql-9.1 postgresql-contrib-9.1
+</pre>
+
+	<p>/etc/sysctl.d/30-postgresql-shm.conf needs to be changed to increase the number of connections and amount of memory PostgreSQL can handle at once. See <a class="external" href="http://www.postgresql.org/docs/9.1/static/runtime-config-resource.html">http://www.postgresql.org/docs/9.1/static/runtime-config-resource.html</a> for info on what to change in postgresql.conf.</p>
+
+
+	<p>To reload kernel settings run the following:</p>
+
+
+<pre>
+sudo service procps start
+</pre>
+
+	<a name="Client-Only"></a>
+<h3 >Client Only<a href="#Client-Only" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+sudo aptitude install postgresql-client-9.1 libpq-dev
+</pre>
+
+	<a name="How-Bulk-Assign-Permissions-for-New-Apps"></a>
+<h2 >How Bulk Assign Permissions for New Apps<a href="#How-Bulk-Assign-Permissions-for-New-Apps" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Export CSV from this query.</p>
+
+
+<pre><code class="sql syntaxhl"><span class="CodeRay"><span class="line-numbers">1</span><span class="class">select</span> table_schema, table_name
+<span class="line-numbers">2</span><span class="keyword">from</span> information_schema.tables
+<span class="line-numbers">3</span><span class="keyword">where</span> table_schema <span class="keyword">not</span> <span class="keyword">in</span>(<span class="string"><span class="delimiter">'</span><span class="content">pg_catalog</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">information_schema</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">archive</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">jwappner</span><span class="delimiter">'</span></span>)
+<span class="line-numbers">4</span><span class="keyword">order</span> <span class="keyword">by</span> table_schema, table_name
+</span></code></pre>
+
+	<p>Edit CSV and add columns 'select', 'sequence', 'insert', 'update', and 'delete'. Put something in the cell if the new application needs that permission.</p>
+
+
+	<p>Run script with two params: csv file name and role name.</p>
+
+
+<pre>
+ruby grant_from_csv.rb tables.csv hac_student
+</pre>
+
+<pre><code class="ruby syntaxhl"><span class="CodeRay"><span class="line-numbers"> 1</span><span class="doctype">#!/usr/local/bin/ruby</span>
+<span class="line-numbers"> 2</span>
+<span class="line-numbers"> 3</span>require <span class="string"><span class="delimiter">'</span><span class="content">csv</span><span class="delimiter">'</span></span>
+<span class="line-numbers"> 4</span>
+<span class="line-numbers"> 5</span>csv_file_name = <span class="predefined-constant">ARGV</span>[<span class="integer">0</span>]
+<span class="line-numbers"> 6</span>role_name = <span class="predefined-constant">ARGV</span>[<span class="integer">1</span>]
+<span class="line-numbers"> 7</span>
+<span class="line-numbers"> 8</span>tables = <span class="constant">CSV</span>.parse(<span class="constant">File</span>.open(csv_file_name).read, <span class="symbol">:headers</span> =&gt; <span class="predefined-constant">true</span>, <span class="symbol">:return_headers</span> =&gt; <span class="predefined-constant">false</span>)
+<span class="line-numbers"> 9</span>
+<span class="line-numbers"><strong>10</strong></span>puts <span class="string"><span class="delimiter">&quot;</span><span class="content">BEGIN;</span><span class="delimiter">&quot;</span></span> 
+<span class="line-numbers">11</span>tables.each <span class="keyword">do</span> |r|
+<span class="line-numbers">12</span>  table_permissions = []
+<span class="line-numbers">13</span>  table_permissions.push <span class="string"><span class="delimiter">&quot;</span><span class="content">SELECT</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> r[<span class="string"><span class="delimiter">&quot;</span><span class="content">select</span><span class="delimiter">&quot;</span></span>]
+<span class="line-numbers">14</span>  table_permissions.push <span class="string"><span class="delimiter">&quot;</span><span class="content">INSERT</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> r[<span class="string"><span class="delimiter">&quot;</span><span class="content">insert</span><span class="delimiter">&quot;</span></span>]
+<span class="line-numbers">15</span>  table_permissions.push <span class="string"><span class="delimiter">&quot;</span><span class="content">UPDATE</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> r[<span class="string"><span class="delimiter">&quot;</span><span class="content">update</span><span class="delimiter">&quot;</span></span>]
+<span class="line-numbers">16</span>  table_permissions.push <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> r[<span class="string"><span class="delimiter">&quot;</span><span class="content">delete</span><span class="delimiter">&quot;</span></span>]
+<span class="line-numbers">17</span>  table_permissions = table_permissions.compact
+<span class="line-numbers">18</span>
+<span class="line-numbers">19</span>  <span class="keyword">unless</span> table_permissions.empty?
+<span class="line-numbers"><strong>20</strong></span>    puts <span class="string"><span class="delimiter">&quot;</span><span class="content">GRANT </span><span class="inline"><span class="inline-delimiter">#{</span>table_permissions.join(<span class="string"><span class="delimiter">'</span><span class="content">, </span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="content"> ON </span><span class="inline"><span class="inline-delimiter">#{</span>r[<span class="string"><span class="delimiter">'</span><span class="content">table_schema</span><span class="delimiter">'</span></span>]<span class="inline-delimiter">}</span></span><span class="content">.</span><span class="inline"><span class="inline-delimiter">#{</span>r[<span class="string"><span class="delimiter">'</span><span class="content">table_name</span><span class="delimiter">'</span></span>]<span class="inline-delimiter">}</span></span><span class="content"> TO </span><span class="inline"><span class="inline-delimiter">#{</span>role_name<span class="inline-delimiter">}</span></span><span class="content">;</span><span class="delimiter">&quot;</span></span> 
+<span class="line-numbers">21</span>    <span class="keyword">if</span> r[<span class="string"><span class="delimiter">&quot;</span><span class="content">sequence</span><span class="delimiter">&quot;</span></span>]
+<span class="line-numbers">22</span>      puts <span class="string"><span class="delimiter">&quot;</span><span class="content">GRANT USAGE ON </span><span class="inline"><span class="inline-delimiter">#{</span>r[<span class="string"><span class="delimiter">'</span><span class="content">table_schema</span><span class="delimiter">'</span></span>]<span class="inline-delimiter">}</span></span><span class="content">.</span><span class="inline"><span class="inline-delimiter">#{</span>r[<span class="string"><span class="delimiter">'</span><span class="content">table_name</span><span class="delimiter">'</span></span>]<span class="inline-delimiter">}</span></span><span class="content">_id_seq TO </span><span class="inline"><span class="inline-delimiter">#{</span>role_name<span class="inline-delimiter">}</span></span><span class="content">;</span><span class="delimiter">&quot;</span></span> 
+<span class="line-numbers">23</span>    <span class="keyword">end</span>
+<span class="line-numbers">24</span>  <span class="keyword">end</span>
+<span class="line-numbers">25</span><span class="keyword">end</span>
+<span class="line-numbers">26</span>puts <span class="string"><span class="delimiter">&quot;</span><span class="content">COMMIT;</span><span class="delimiter">&quot;</span></span> 
+</span></code></pre>
+
+	<a name="Test-Sync-Performance"></a>
+<h2 >Test Sync Performance<a href="#Test-Sync-Performance" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Useful to test that performance isn't <strong>too good</strong>. If it is too good then it is doing write-caching somewhere.</p>
+
+
+<pre>
+/usr/lib/postgresql/9.1/bin/pg_test_fsync
+</pre>
+
+	<a name="Reloading-Server-Config-Without-Restarting"></a>
+<h2 >Reloading Server Config Without Restarting<a href="#Reloading-Server-Config-Without-Restarting" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl reload -D /var/lib/postgresql/9.1/main/
+</pre>
+
+	<a name="Replication"></a>
+<h2 >Replication<a href="#Replication" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Need shared file store for WAL logs. I am currently using CIFS.</p>
+
+
+	<p>PostgreSQL docs are really good: <a class="external" href="http://www.postgresql.org/docs/9.1/static/high-availability.html">http://www.postgresql.org/docs/9.1/static/high-availability.html</a></p>
+
+
+	<a name="Master"></a>
+<h3 >Master<a href="#Master" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>postgresql.conf<br /><pre>
+wal_level = hot_standby
+archive_mode = on
+archive_command = 'test ! -f /mnt/pg-primary/wal/%f &#38;&#38; cp %p /mnt/pg-primary/wal/%f'
+max_wal_senders = 5
+</pre></p>
+
+
+	<a name="Replicant"></a>
+<h3 >Replicant<a href="#Replicant" class="wiki-anchor">&para;</a></h3>
+
+
+	<a name="Full-Base-Backup"></a>
+<h3 >Full Base Backup<a href="#Full-Base-Backup" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>Run as postgres user (or user with replication privileges)<br /><pre>
+/usr/lib/postgresql/9.1/bin/pg_basebackup -D - -Ft | bzip2 &gt; /mnt/pg-primary/base-backup/$(date +%Y-%m-%d-%H-%M-%S).tar.bz2
+</pre></p>
+
+
+	<a name="Point-in-Time-Recovery-PITR"></a>
+<h3 >Point in Time Recovery (PITR)<a href="#Point-in-Time-Recovery-PITR" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>To recover from a backup you will need a new cluster. This can be created with the Debian/Ubuntu command pg_createcluster. Copy the base backup closest to the time you want to restore to recovery cluster. Stop the PostgreSQL service. Wipe the PostgreSQL data directory and replace it with the base backup.</p>
+
+
+<pre>
+cd /DATA_PATH
+rm -rf backup_label global pg_multixact pg_serial pg_subtrans pg_twophase pg_xlog base pg_clog pg_notify pg_stat_tmp pg_tblspc PG_VERSION
+cd /RESTORE_PATH
+cp -r * /DATA_PATH
+chown -R postgres:postgres /DATA_PATH
+</pre>
+
+	<p>Get all the WAL files available to the recovery machine (copy or network share). Create a recovery.conf file in the data directory.</p>
+
+
+	<p>Example:<br /><pre>
+restore_command = 'cp /mnt/server/archivedir/%f %p'
+recovery_target_time = '2012-01-09 08:00:00'
+</pre></p>
+
+
+	<p>Start PostgreSQL service.</p>
+
+
+	<p><a class="external" href="http://www.postgresql.org/docs/9.1/static/continuous-archiving.html">http://www.postgresql.org/docs/9.1/static/continuous-archiving.html</a></p>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>SFTP Only</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="SFTP-Only"></a>
+<h1 >SFTP Only<a href="#SFTP-Only" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Server-Setup"></a>
+<h2 >Server Setup<a href="#Server-Setup" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Create a sftponly group.<br /><pre>
+sudo addgroup sftponly
+</pre></p>
+
+
+	<p>Edit /etc/ssh/sshd_config</p>
+
+
+	<p>Alter the Subsystem sftp to internal-sftp<br /><pre>
+Subsystem sftp internal-sftp
+</pre></p>
+
+
+	<p>Append<br /><pre>
+Match group sftponly
+  ChrootDirectory %h
+  X11Forwarding no
+  AllowTcpForwarding no
+  ForceCommand internal-sftp
+</pre></p>
+
+
+	<a name="Per-User"></a>
+<h2 >Per User<a href="#Per-User" class="wiki-anchor">&para;</a></h2>
+
+
+	<ul>
+	<li>Create user</li>
+		<li>Add user to sftponly group</li>
+		<li>Set user's home directory to be owned by root.</li>
+	</ul>
+</body>
+</html>

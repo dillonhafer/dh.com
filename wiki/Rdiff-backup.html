@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Rdiff-backup</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="HowToBackupWithRdiffBackup"></a>
+<h1 >HowToBackupWithRdiffBackup<a href="#HowToBackupWithRdiffBackup" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Primary source of information on this are the online <a href="http://www.nongnu.org/rdiff-backup/docs.html" class="external">docs</a>, a user-written guide to <a href="http://arctic.org/~dean/rdiff-backup/unattended.html" class="external">unattended backups</a>, and the man page.</p>
+
+
+	<p>Sample backup command:<br /><pre>
+rdiff-backup --verbosity 5 boar-backup::/home /home/rdiff/disk1/backup
+</pre></p>
+
+
+	<p>Verbosity 5 is used so it logs what files have changed.</p>
+
+
+	<p>Sample restore command:<br /><pre>
+rdiff-backup --restore-as-of now /home/rdiff/disk1/backup /home/jackc/restore
+</pre></p>
+
+
+	<p>Note that when backing up from remote machines the SSH permissions may not be such that a direct restore is possible. For example, the backup server may only have permissions to run the backup on the remote server, and the remote server may not have any permissions on the backup server. In this case it would be necessary to temporarily adjust permissions to run a complete restore.</p>
+
+
+	<p>How to clear old history (sudo backup user (or whatever the owner of the backup is)):<br /><pre>
+rdiff-backup --remove-older-than 2W --force /var/disk3/backup
+</pre></p>
+</body>
+</html>

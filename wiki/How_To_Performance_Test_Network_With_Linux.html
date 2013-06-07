@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>How To Performance Test Network With Linux</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="How-To-Performance-Test-Network-With-Linux"></a>
+<h1 >How To Performance Test Network With Linux<a href="#How-To-Performance-Test-Network-With-Linux" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Install iperf on two machines. Make sure the server's firewall allows port 5001.</p>
+
+
+	<p>Server:<br /><pre>
+jackc@db-replicant:~$ iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 10.250.2.72 port 5001 connected with 10.250.2.188 port 34124
+[  4]  0.0-10.3 sec    115 MBytes  94.1 Mbits/sec
+</pre></p>
+
+
+	<p>Client:<br /><pre>
+jackc@jackc-pc:~$ iperf -c db-replicant
+------------------------------------------------------------
+Client connecting to db-replicant, TCP port 5001
+TCP window size: 16.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.250.2.188 port 34124 connected with 10.250.2.72 port 5001
+[  3]  0.0-10.1 sec    115 MBytes  96.0 Mbits/sec
+</pre></p>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Linux and Samba commands</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Linux-and-Samba-commands"></a>
+<h1 >Linux and Samba commands<a href="#Linux-and-Samba-commands" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Samba"></a>
+<h2 >Samba<a href="#Samba" class="wiki-anchor">&para;</a></h2>
+
+
+	<p><strong>adduser just to samba:</strong> sudo adduser --disabled-password username<br /><strong>Change Password:</strong>       sudo smbpasswd -a username<br /><strong>Delete user:</strong>           sudo smbpasswd -x username<br /><strong>List users:</strong>            sudo pdbedit -w -L</p>
+
+
+	<a name="Ubuntu"></a>
+<h2 >Ubuntu<a href="#Ubuntu" class="wiki-anchor">&para;</a></h2>
+
+
+	<p><strong>Add Use:</strong>     sudo adduser username<br /><strong>Delete User:</strong> sudo userdel -r username</p>
+
+
+	<a name="find"></a>
+<h2 >find<a href="#find" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Find all files ending in .txt case insensitively in current directory:</p>
+
+
+<pre>
+find . -iname '*.txt'
+</pre>
+
+	<p>Find all files ending in .txt case insensitively in current directory and do something with the file (cat in this case):</p>
+
+
+<pre>
+find . -iname '*.txt' -exec cat {} \;
+</pre>
+
+	<p>Find broken symlinks in current directory.</p>
+
+
+<pre>
+find -L . -type l
+</pre>
+
+	<a name="mtr"></a>
+<h2 >mtr<a href="#mtr" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>mtr is a combination of traceroute and ping</p>
+
+
+<pre>
+mtr google.com
+</pre>
+
+	<a name="tmux"></a>
+<h2 >tmux<a href="#tmux" class="wiki-anchor">&para;</a></h2>
+
+
+	<p><a href="Tmux.html" class="wiki-page">tmux</a> terminal sharing</p>
+
+
+	<a name="dstat"></a>
+<h2 >dstat<a href="#dstat" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Show CPU, disk, and network usage.</p>
+
+
+<pre>
+dstat
+</pre>
+</body>
+</html>
