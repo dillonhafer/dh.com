@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Deploying Rails apps to bluehost</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+<a name="Deploying-Rails-apps-to-bluehost"></a>
+<h2 >Deploying Rails apps to bluehost<a href="#Deploying-Rails-apps-to-bluehost" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>If this is running along side wordpress, make sure the wordpress .htaccess file in ~/public_html has this:<br /><pre>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_URI} !^/(foldername|foldername/.*)$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</pre><br />Line 3 is the difference</p>
+
+
+	<p>After that you need to change your production.rb file to include this:<br /><pre>
+config.action_controller.relative_url_root = "/foldername" 
+</pre></p>
+
+
+	<p>The above instructions are only needed if being installed sidewards to wordpress. Also you will need to change the deploy script to create the sym link adding "/foldername"</p>
+
+
+	<a name="1-Use-this-base-capistrano-recipe-use-capistrano-to-deploy-replace-pipeline-with-your-desired-name"></a>
+<h3 >1. Use this base capistrano recipe (use capistrano to deploy, replace 'pipeline' with your desired name)<a href="#1-Use-this-base-capistrano-recipe-use-capistrano-to-deploy-replace-pipeline-with-your-desired-name" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+require 'bundler/capistrano'
+
+set :application, "pipeline" 
+
+default_run_options[:pty] = true
+ssh_options[:forward_agent] = true
+
+role :app, "66.147.244.65" 
+role :web, "66.147.244.65" 
+role :db, "66.147.244.65", :primary =&gt; true
+
+set :deploy_to, "/home8/pipelio9/rails_apps/pipeline_cms" 
+set :deploy_via, :remote_cache
+set :use_sudo, false
+
+set :scm, :git
+set :repository, "ssh://boondoc4@redmine.boondockstaging.com/home8/boondoc4/www/git/pipeline_cms.git" 
+set :branch, "master" 
+
+set :user, "pipelio9" 
+
+after "deploy:update_code" do
+  #run "ln -s #{shared_path}/database.yml #{release_path}/config/database.yml" 
+  run "rm -rf /home8/pipelio9/public_html/pipeline_cms" 
+  run "ln -s #{release_path}/public /home8/pipelio9/public_html/pipeline_cms" 
+  #run "cd #{release_path} ; RAILS_ENV=production bundle exec rake assets:precompile --trace" 
+end
+
+namespace :deploy do
+  task :start, :roles =&gt; :app do
+    restart
+  end
+
+  task :restart, :roles =&gt; :app do
+    run "touch #{File.join(current_path, "tmp", "restart.txt")}" 
+  end
+end
+</pre>
+
+	<a name="2-Put-this-in-Railsrootpublichtaccess"></a>
+<h3 >2. Put this in #{Rails.root}/public/.htaccess<a href="#2-Put-this-in-Railsrootpublichtaccess" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+Options -MultiViews
+  PassengerResolveSymlinksInDocumentRoot on
+  #Set this to whatever environment you'll be running in
+  RailsEnv production
+  RackBaseURI /
+  SetEnv GEM_HOME /home8/pipelio9/ruby/gems
+</pre>
+
+	<a name="3-Use-this-inside-bashrc"></a>
+<h3 >3. Use this inside ~/.bashrc<a href="#3-Use-this-inside-bashrc" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+export HPATH=$HOME
+export GEM_HOME=$HPATH/ruby/gems
+export GEM_PATH=$GEM_HOME:/usr/lib64/ruby/gems/1.8
+export GEM_CACHE=$GEM_HOME/cache
+export PATH=$PATH:$HPATH/ruby/gems/bin
+export PATH=$PATH:$HPATH/ruby/gems  
+</pre>
+
+	<a name="NOTE-The-first-time-you-deploy-to-bluehost-ruby-will-throw-an-error-because-blue-host-uses-an-ancient-version-of-Ruby-"></a>
+<h2 ><ins>NOTE: The first time you deploy to bluehost, ruby will throw an error because blue host uses an ancient version of Ruby :(</ins><a href="#NOTE-The-first-time-you-deploy-to-bluehost-ruby-will-throw-an-error-because-blue-host-uses-an-ancient-version-of-Ruby-" class="wiki-anchor">&para;</a></h2>
+
+
+<pre>
+** [out :: 66.147.244.65] Invalid gemspec in [/home8/pipelio9/rails_apps/pipeline_cms/shared/bundle/ruby/1.8/specifications/mail-2.4.4.gemspec]: invalid date format in specification: "2012-03-14 00:00:00.000000000Z" 
+</pre>
+
+	<a name="This-is-how-you-fix-it"></a>
+<h3 >This is how you fix it:<a href="#This-is-how-you-fix-it" class="wiki-anchor">&para;</a></h3>
+
+
+	<a name="1-nano-rails_appspipeline_cmssharedbundleruby18specificationsmail-244gemspec"></a>
+<h3 >1. nano rails_apps/pipeline_cms/shared/bundle/ruby/1.8/specifications/mail-2.4.4.gemspec<a href="#1-nano-rails_appspipeline_cmssharedbundleruby18specificationsmail-244gemspec" class="wiki-anchor">&para;</a></h3>
+
+
+	<a name="2-Change-line-9-from"></a>
+<h3 >2. Change line 9 from<a href="#2-Change-line-9-from" class="wiki-anchor">&para;</a></h3>
+
+
+<pre>
+s.date = %q{2012-03-14 00:00:00.000000000Z}
+</pre> <br />to<br /><pre>
+s.date = %q{2012-03-14}
+</pre> <br />Do that to all of the gems that throw the error when running `cap deploy`
+</body>
+</html>
